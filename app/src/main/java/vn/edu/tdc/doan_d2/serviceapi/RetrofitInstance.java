@@ -8,7 +8,7 @@ public class RetrofitInstance {
     private static Retrofit retrofit = null;
     public static String BASE_URL = "https://all-in-one-recipe-api.p.rapidapi.com/";
 
-    public static RecipeApiService getService() {
+    public static RecipeCategoryApiService getService() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
@@ -16,6 +16,6 @@ public class RetrofitInstance {
                     .build();
         }
 
-        return retrofit.create(RecipeApiService.class);
+        return retrofit.create(RecipeCategoryApiService.class);
     }
 }
