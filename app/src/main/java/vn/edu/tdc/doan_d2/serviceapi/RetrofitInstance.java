@@ -3,6 +3,7 @@ package vn.edu.tdc.doan_d2.serviceapi;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+
 public class RetrofitInstance {
 
     private static Retrofit retrofit = null;
@@ -15,7 +16,6 @@ public class RetrofitInstance {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-
         return retrofit.create(RecipeCategoryApiService.class);
     }
 }

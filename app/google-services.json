@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "333938064127",
+    "project_id": "my-project-recipe-bb21d",
+    "storage_bucket": "my-project-recipe-bb21d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333938064127:android:6b5873a62c0fb94e86aaca",
+        "android_client_info": {
+          "package_name": "vn.edu.tdc.doan_d2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW6Y-PdKa8IQnsFv47a494zrwWbAGfyoM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

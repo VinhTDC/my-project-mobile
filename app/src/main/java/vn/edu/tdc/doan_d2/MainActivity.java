@@ -14,6 +14,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +39,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Write a messages to the database
 
+        // Initialize and Access the Firebase Database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        // get a reference to a specific  node in the database
+        DatabaseReference myRef  = database.getReference("messenger");
+        // Write a value to the specified database location
+        myRef.setValue("Hello from our Course");
         binding = DataBindingUtil.setContentView(
                 this,
                 R.layout.activity_main
