@@ -15,12 +15,12 @@ import android.widget.Toast;
 public class LoginActivity extends AppCompatActivity {
     public static final String emailPattern = "[a-zA-Z0-9.-]+@[a-zA-Z]+[a-z]{2,}";
     //để private cho nó chỉ ánh xạ ở trong này được thoi
-    private EditText textEmail;
-    private EditText textPassWord;
+    private EditText textEmail ;
+    private EditText textPassWord ;
     private Button btnLogin;
     private TextView textValidate;
     //Validation
-    private Boolean isValidEmail = false;
+    private Boolean isValidEmail = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
