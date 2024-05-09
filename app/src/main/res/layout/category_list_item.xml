@@ -30,17 +30,20 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-
-                    android:id="@+id/ivMovie"
+                    android:id="@+id/imageCategory"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:scaleType="fitXY" />
+                    android:scaleType="fitXY"
+                    android:text="Loading"
+
+                    />
+
 
                 <TextView
                     android:id="@+id/nameCategory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/ivMovie"
+                    android:layout_below="@+id/imageCategory"
                     android:paddingLeft="10dp"
                     android:paddingTop="10dp"
                     android:paddingRight="10dp"
@@ -48,16 +51,6 @@
                     android:textColor="@color/black"
                     android:textSize="15dp" />
 
-                <TextView
-                    android:id="@+id/tvRating"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingBottom="10dp"
-                    android:textColor="@color/black"
-                    android:textSize="12dp" />
 
             </RelativeLayout>
 

@@ -1,0 +1,29 @@
+[33mcommit 14b47243e1defe9bdee37ff20bc66f4bbadd3701[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mget-api-retrofit[m[33m, [m[1;31morigin/get-api-retrofit[m[33m)[m
+Author: VinhTDC <22211TT4921@mail.tdc.edu.vn>
+Date:   Tue May 7 21:04:21 2024 +0700
+
+    save-data-in-firebase
+
+[33mcommit 2bb314d9a4671d40df1d1141a1c8f4996405099f[m
+Author: VinhTDC <22211TT4921@mail.tdc.edu.vn>
+Date:   Tue May 7 20:47:17 2024 +0700
+
+    add-firebase
+
+[33mcommit db760c336009a1d44d54f01443e3ff5e10de10e2[m
+Author: VinhTDC <22211TT4921@mail.tdc.edu.vn>
+Date:   Tue May 7 19:07:12 2024 +0700
+
+    created-categories
+
+[33mcommit 806db301ac30389fd9b930d7203eb85f372b09cd[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m
+Author: VinhTDC <22211TT4921@mail.tdc.edu.vn>
+Date:   Tue May 7 13:29:52 2024 +0700
+
+    created-retrofit
+
+[33mcommit 2ef9fe8919db15b21a596ba45d0d5f1e97f78abc[m[33m ([m[1;32mmain[m[33m)[m
+Author: VinhTDC <22211TT4921@mail.tdc.edu.vn>
+Date:   Tue May 7 10:36:37 2024 +0700
+
+    first commit

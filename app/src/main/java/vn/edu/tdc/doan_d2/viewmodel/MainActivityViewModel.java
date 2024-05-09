@@ -8,7 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 
-import vn.edu.tdc.doan_d2.model.CategoryRecipeResponsive;
+
+import vn.edu.tdc.doan_d2.model.category.Category;
+import vn.edu.tdc.doan_d2.model.responsive.CategoryRecipeResponsive;
 
 
 public class MainActivityViewModel extends AndroidViewModel {
@@ -18,7 +20,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         this.recipeCategoryResponsive = new CategoryRecipeResponsive(application);
     }
     //Live Data
-    public MutableLiveData<ArrayList<String>> getAllCategory(){
-        return recipeCategoryResponsive.getDataMutableLiveData();
+    public MutableLiveData<ArrayList<Category>> getAllCategory(){
+        return recipeCategoryResponsive.allCategory();
     }
 }
