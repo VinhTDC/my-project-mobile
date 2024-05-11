@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -25,7 +26,9 @@ import java.util.ArrayList;
 
 import vn.edu.tdc.doan_d2.R;
 import vn.edu.tdc.doan_d2.databinding.CategoryListItemBinding;
+import vn.edu.tdc.doan_d2.databinding.FragmentItemBinding;
 import vn.edu.tdc.doan_d2.model.category.Category;
+import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModel;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -39,12 +42,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
 
-
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         CategoryListItemBinding binding = DataBindingUtil
-                .inflate(LayoutInflater.from(context), R.layout.category_list_item, parent, false);
+                .inflate(LayoutInflater.from(parent.getContext()), R.layout.category_list_item, parent, false);
         return new MyViewHolder(binding);
     }
 
@@ -73,10 +75,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             categoryListItemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("testClick","Called");
+                    Log.d("testClick", "Called");
                 }
             });
         }
+
         public void bind(Category category) {
             // Lấy hình ảnh từ Firebase Storage
             String imageUrl = category.getImgUrl();
@@ -151,6 +154,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
+    public void setData(ArrayList<Category> newData) {
+        this.data.clear();
+        this.data.addAll(newData);
+    }
 
 
 }

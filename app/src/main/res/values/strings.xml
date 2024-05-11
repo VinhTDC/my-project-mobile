@@ -3,4 +3,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="api_key">bb3ff6e053msh0904942b711621ap1dabb1jsnb953455d7053</string>
+    <string name="nameTittle">Categories</string>
 </resources>
