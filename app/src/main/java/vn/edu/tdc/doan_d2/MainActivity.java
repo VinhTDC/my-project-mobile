@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
             fragment = new CategoryFragment();
             fragment.setPaginationInterface(this);
             fragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainer, fragment, tagFragment)
+                    .replace(R.id.fragmentContainer, fragment, tagFragment)
                     .commit();
         } else {
             fragment = new CategoryFragment();
@@ -154,4 +154,5 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
     public void onPageChanged(int currentPage) {
 
     }
+
 }

@@ -2,9 +2,12 @@ package vn.edu.tdc.doan_d2.viewmodel;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -12,37 +15,49 @@ import java.util.ArrayList;
 
 
 import vn.edu.tdc.doan_d2.model.category.Category;
+import vn.edu.tdc.doan_d2.model.responsive.CategoryFilter;
 import vn.edu.tdc.doan_d2.model.responsive.CategoryRecipeResponsive;
+import vn.edu.tdc.doan_d2.model.responsive.CategoryUtils;
 
 
 public class MainActivityViewModel extends AndroidViewModel {
     private final CategoryRecipeResponsive recipeCategoryResponsive;
-    private MutableLiveData<Integer> categoriesCountLiveData = new MutableLiveData<>(0);
-    private MutableLiveData<ArrayList<Category>> filteredCategoriesLiveData = new MutableLiveData<>();
+    private final CategoryFilter categoryFilter;
+    private final MutableLiveData<Integer> categoriesCountLiveData = new MutableLiveData<>(0);
+    private final MutableLiveData<ArrayList<Category>> filteredCategoriesLiveData = new MutableLiveData<>();
+    private CategoryUtils categoryUtils;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
-        this.recipeCategoryResponsive = new CategoryRecipeResponsive(application,this);
+        this.recipeCategoryResponsive = new CategoryRecipeResponsive(application, this);
+        this.categoryFilter = new CategoryFilter(this,recipeCategoryResponsive );
     }
 
     //Live Data
     public MutableLiveData<ArrayList<Category>> getAllCategory() {
-
-        return recipeCategoryResponsive.getAllCategory();
-
+        return recipeCategoryResponsive.getAllCategories();
     }
 
-    public MutableLiveData<ArrayList<Category>> loadCategoriesForPage(int page, int pageSize) {
+    public MutableLiveData<ArrayList<Category>> loadCategoriesForPage(int page, int pageSize,LifecycleOwner lifecycleOwner) {
         MutableLiveData<ArrayList<Category>> pageData = new MutableLiveData<>();
-        recipeCategoryResponsive.getAllCategory().observeForever(allCategories -> {
+        categoryUtils = new CategoryUtils(this, recipeCategoryResponsive);
+        recipeCategoryResponsive.getAllCategories().observe( lifecycleOwner, allCategories -> {
             if (allCategories != null) { // Kiểm tra null
                 int startIndex = page * pageSize;
                 int endIndex = Math.min(startIndex + pageSize, allCategories.size());
                 categoriesCountLiveData.setValue(allCategories.size());
-                ArrayList<Category> pageCategories = recipeCategoryResponsive.getCategoriesByRange(startIndex, endIndex);
-                pageData.setValue(pageCategories);
-            } else {
+                categoryUtils.getCategoriesByRange(startIndex, endIndex, new CategoryUtils.CategoryResponse() {
+                    @Override
+                    public void onSuccess(ArrayList<Category> categories) {
+                        pageData.setValue(categories);
+                    }
 
+                    @Override
+                    public void onError(String errorMessage) {
+                        Toast.makeText(getApplication(), "Error loading", Toast.LENGTH_SHORT).show();
+                    }
+                }, lifecycleOwner);
+            } else {
                 pageData.setValue(new ArrayList<>());
             }
         });
@@ -55,22 +70,12 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     private MutableLiveData<String> searchQueryLiveData = new MutableLiveData<>();
 
-    public void updateSearchQuery(String query,int page, int pageSize) {
-        if(query == null || query.isEmpty()){
-            loadCategoriesForPage( page,  pageSize).observeForever(categories -> {
-                if(categories != null)
-                    filteredCategoriesLiveData.postValue(categories);
-            });
-        }
-        else {
-            searchQueryLiveData.setValue(query);
-            recipeCategoryResponsive.searchCategoriesFromFirebase(query);
-        }
-
-    }
+//    public void updateSearchQuery(String query, int page, int pageSize, LifecycleOwner lifecycleOwner) {
+//
+//    }
 
     public LiveData<ArrayList<Category>> getFilteredCategoriesLiveData() {
-        Log.d("filteredCategoriesLiveData",filteredCategoriesLiveData.getValue()+"");
+        Log.d("filteredCategoriesLiveData", filteredCategoriesLiveData.getValue() + "");
         return filteredCategoriesLiveData;
     }
 
@@ -79,5 +84,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         filteredCategoriesLiveData.postValue(filteredCategories);
     }
 
+    public void updateSearchQuery(String query, int page, int pageSize, LifecycleOwner lifecycleOwner) {
+        if (query == null || query.isEmpty()) {
+            loadCategoriesForPage(page, pageSize, lifecycleOwner).observe(lifecycleOwner, filteredCategoriesLiveData::setValue);
+        } else {
+            searchQueryLiveData.setValue(query);
+            categoryFilter.filterCategories(query).observe(lifecycleOwner, filteredCategoriesLiveData::setValue);
+        }
+    }
 }
 

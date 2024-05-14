@@ -22,6 +22,7 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import vn.edu.tdc.doan_d2.R;
 
@@ -33,9 +34,6 @@ import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private Context context;
     private ArrayList<Category> data;
-    private static final int IMAGE_LOADING = 1;
-    private static final int IMAGE_LOADED = 2;
-    private static final int IMAGE_ERROR = 3;
 
 
     public MyAdapter(Context context, ArrayList<Category> categories) {
@@ -43,11 +41,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         this.data = categories;
         setHasStableIds(false);
     }
-
-
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d("MyViewHolder", "call");
         FragmentCategoryItemBinding binding = DataBindingUtil
                 .inflate(LayoutInflater.from(parent.getContext()), R.layout.fragment_category_item, parent, false);
         return new MyViewHolder(binding);
@@ -56,7 +53,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        if (data != null && position >= 0 && position < data.size()) {
+        if (data != null && !data.isEmpty() && position >= 0 && position < data.size()) {
             Category category = data.get(position);
             Glide.get(context).clearMemory();
             String capitalizedName = category.getName().substring(0, 1).toUpperCase() + category.getName().substring(1);
@@ -67,6 +64,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public int getItemCount() {
+        Log.d("size" ,data.size()+"");
         return data != null ? data.size() : 0;
     }
 
@@ -92,7 +90,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             // Kiểm tra xem imageUrl không null và không rỗng
             if (imageUrl != null && !imageUrl.isEmpty()) {
-                Log.d("testimg", imageUrl);
 
                 Glide.with(categoryListItemBinding.imageCategory.getContext())
                         .asGif() // Thiết lập tải dưới dạng GIF
@@ -111,7 +108,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .skipMemoryCache(true)
                                 .into(categoryListItemBinding.imageCategory);
-
                         Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -126,7 +122,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                             switch (errorCode) {
                                 case StorageException.ERROR_OBJECT_NOT_FOUND:
                                     // Tệp không tồn tại, xử lý tương ứng
-                                    Log.e("FirebaseStorage", "File does not exist: " + errorMessage);
+                                    Log.e("FirebaseStorage1", "File does not exist: " + errorMessage);
                                     break;
                                 default:
                                     // Xử lý mặc định hoặc thông báo lỗi
@@ -135,14 +131,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         } else {
 
                             // Xử lý các loại ngoại lệ khác
-                            Log.e("FirebaseStorage", "Error: " + exception.getMessage());
+                            Log.e("FirebaseStorage2", "Error: " + exception.getMessage());
                         }
-                        Log.e("FirebaseStorage", "File does not exist: " + exception.getMessage());
+                        Log.e("FirebaseStorage3", "File does not exist: " + exception.getMessage());
                     }
                 });
             } else {
                 // Xử lý trường hợp imageUrl là null hoặc rỗng
-                Log.e("testimg", "Image URL is null or empty");
+
             }
 
             // Đặt tên danh mục
