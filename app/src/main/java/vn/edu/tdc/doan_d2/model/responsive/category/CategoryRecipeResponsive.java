@@ -1,37 +1,35 @@
-package vn.edu.tdc.doan_d2.model.responsive;
+package vn.edu.tdc.doan_d2.model.responsive.category;
 
 import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import vn.edu.tdc.doan_d2.model.category.Category;
-import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModel;
+import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
+
 
 
 public class CategoryRecipeResponsive implements CategoryDataSource {
     private Application application;
     private final MutableLiveData<ArrayList<Category>> categoriesLiveData = new MutableLiveData<>();
-    private MainActivityViewModel viewModel;
+    private CategoryViewModel viewModel;
 
     private ArrayList<Category> categories;
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private boolean isDataLoaded = false;
 
 
-    public CategoryRecipeResponsive(Application application, MainActivityViewModel viewModel) {
+    public CategoryRecipeResponsive(Application application, CategoryViewModel viewModel) {
         this.application = application;
         this.viewModel = viewModel;
     }

@@ -1,21 +1,23 @@
-package vn.edu.tdc.doan_d2.model.category;
+package vn.edu.tdc.doan_d2.model.cuisine;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Categories {
+public class Cuisines {
     @SerializedName("data")
     @Expose
     private List<String> data;
 
+    public Cuisines(List<String> data) {
+      this.data = data;
+    }
+    public Cuisines() {
 
-    public Categories(List<String> data) {
-        this.data = data;
     }
-    public Categories() {
-    }
+
+    // Getters and setters
 
     public List<String> getData() {
         return data;
@@ -25,5 +27,3 @@ public class Categories {
         this.data = data;
     }
 }
-
-

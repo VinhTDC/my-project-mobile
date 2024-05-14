@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import vn.edu.tdc.doan_d2.model.cuisine.Cuisines;
+
 public class CategoryResponse {
     @SerializedName("categories")
     @Expose
@@ -16,6 +18,7 @@ public class CategoryResponse {
     public void setCategories(Categories categories) {
         this.categories = categories;
     }
+
 
 }
 

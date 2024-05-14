@@ -4,11 +4,13 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import java.util.ArrayList;
 
-public class CategoryDiffCallback extends DiffUtil.Callback{
-    private final ArrayList<Category> oldCategories;
-    private final ArrayList<Category> newCategories;
+import vn.edu.tdc.doan_d2.model.BaseCategory;
 
-    public CategoryDiffCallback(ArrayList<Category> oldCategories, ArrayList<Category> newCategories) {
+public class CategoryDiffCallback extends DiffUtil.Callback{
+    private final ArrayList<BaseCategory> oldCategories;
+    private final ArrayList<BaseCategory> newCategories;
+
+    public CategoryDiffCallback(ArrayList<BaseCategory> oldCategories, ArrayList<BaseCategory> newCategories) {
         this.oldCategories = oldCategories;
         this.newCategories = newCategories;
     }
@@ -24,15 +26,15 @@ public class CategoryDiffCallback extends DiffUtil.Callback{
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        Category oldCategory = oldCategories.get(oldItemPosition);
-        Category newCategory = newCategories.get(newItemPosition);
+        BaseCategory oldCategory = oldCategories.get(oldItemPosition);
+        BaseCategory newCategory = newCategories.get(newItemPosition);
         return oldCategory != null && newCategory != null && oldCategory.getId() == newCategory.getId();
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        Category oldCategory = oldCategories.get(oldItemPosition);
-        Category newCategory = newCategories.get(newItemPosition);
+        BaseCategory oldCategory = oldCategories.get(oldItemPosition);
+        BaseCategory newCategory = newCategories.get(newItemPosition);
         // So sánh các thuộc tính quan trọng (ví dụ: tên, mô tả, hình ảnh)
         return oldCategory.getName().equals(newCategory.getName()) &&
                 oldCategory.getImgUrl().equals(newCategory.getImgUrl());
