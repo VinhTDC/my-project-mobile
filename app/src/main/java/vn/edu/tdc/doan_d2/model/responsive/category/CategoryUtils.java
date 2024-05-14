@@ -1,24 +1,22 @@
-package vn.edu.tdc.doan_d2.model.responsive;
+package vn.edu.tdc.doan_d2.model.responsive.category;
 
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 
 import vn.edu.tdc.doan_d2.model.category.Category;
-import vn.edu.tdc.doan_d2.model.category.CategoryResponse;
-import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModel;
+import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
+
 
 public class CategoryUtils {
     private CategoryRecipeResponsive responsive;
-    private MainActivityViewModel viewModel;
+    private CategoryViewModel viewModel;
 
 
-    public CategoryUtils(MainActivityViewModel viewModel, CategoryRecipeResponsive responsive) {
+    public CategoryUtils(CategoryViewModel viewModel, CategoryRecipeResponsive responsive) {
         this.viewModel = viewModel;
         this.responsive = responsive;
     }

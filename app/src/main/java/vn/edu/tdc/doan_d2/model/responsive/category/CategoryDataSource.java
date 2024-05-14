@@ -1,4 +1,4 @@
-package vn.edu.tdc.doan_d2.model.responsive;
+package vn.edu.tdc.doan_d2.model.responsive.category;
 
 import androidx.lifecycle.MutableLiveData;
 

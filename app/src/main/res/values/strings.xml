@@ -1,9 +1,13 @@
 <resources>
-    <string name="app_name">DoAn_DĐ2</string>
+    <string name="app_name">Category</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="api_key">bb3ff6e053msh0904942b711621ap1dabb1jsnb953455d7053</string>
     <string name="nameTittle">Categories</string>
     <string name="btnNext">Next</string>
     <string name="btnPre">Previous</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="category">Category</string>
+    <string name="cuisine">Cuisine</string>
 </resources>

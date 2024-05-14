@@ -1,14 +1,19 @@
 package vn.edu.tdc.doan_d2;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 
-import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
@@ -16,8 +21,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
 
@@ -29,26 +39,34 @@ import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.fragment.CategoryFragment;
 import vn.edu.tdc.doan_d2.fragment.PaginationInterface;
 import vn.edu.tdc.doan_d2.view.MyAdapter;
-import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModel;
-import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModelRetrofit;
+import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
+import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
+
 
 public class MainActivity extends AppCompatActivity implements PaginationInterface {
     private MyAdapter myAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ActivityMainBinding binding;
-    private MainActivityViewModel viewModel;
-    private MainActivityViewModelRetrofit loadData;
+    private CategoryViewModel viewModel;
+    private CategoryViewModelRetrofit loadData;
     private static final String PREF_RETROFIT_RUN_FLAG = "pref_retrofit_run_flag";
     private CategoryFragment fragment;
     private String tagFragment = "CATEGORY_FRAGMENT_TAG";
-    private androidx.appcompat.widget.SearchView searchView;
+    private SearchView searchView;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private ActionBarDrawerToggle toggle;
+    private Toolbar toolbar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-         // Khởi tạo ViewModel
+
+        setupToolbar();
+
+        // Khởi tạo ViewModel
 //        if (!isRetrofitRunToday()) {
 //            runRetrofit();
 //            updateRetrofitRunFlag();
@@ -74,16 +92,50 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
             }
         });
 
-        searchView = binding.topAppBar.findViewById(R.id.searchView);
+        searchView = binding.toolbar.findViewById(R.id.searchView);
         if (savedInstanceState == null) {
             addCategoryFragmentWithPaginationInterface();
             fragment.setSearchView(searchView);
         }
 
+
     }
 
-    private void loadDataRetrofitToFriebase() {
-        loadData.getAllCategoryRetrofit().observe(this, new Observer<ArrayList<String>>() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    private void setupToolbar() {
+        toolbar = binding.toolbar;
+        setSupportActionBar(toolbar);
+        drawerLayout = binding.drawerLayout;
+        navigationView = binding.navView;
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.id_category) {
+
+                } else if (itemId == R.id.id_cuisine) {
+
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+        // Thiết lập ActionBarDrawerToggle
+        toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        );
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void loadDataRetrofitToFirebase() {
+        loadData.getAllCategoryRetrofit("categories").observe(this, new Observer<ArrayList<String>>() {
             @Override
             public void onChanged(ArrayList<String> strings) {
             }
@@ -106,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
     }
 
     private void runRetrofit() {
-        loadDataRetrofitToFriebase();
+        loadDataRetrofitToFirebase();
     }
 
     private void addCategoryFragmentWithPaginationInterface() {

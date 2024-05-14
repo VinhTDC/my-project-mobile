@@ -26,18 +26,20 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import vn.edu.tdc.doan_d2.R;
 import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
+import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
-import vn.edu.tdc.doan_d2.model.responsive.CategoryFilter;
-import vn.edu.tdc.doan_d2.model.responsive.CategoryRecipeResponsive;
-import vn.edu.tdc.doan_d2.model.responsive.CategoryUtils;
+import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
+import vn.edu.tdc.doan_d2.model.responsive.category.CategoryFilter;
+import vn.edu.tdc.doan_d2.model.responsive.category.CategoryRecipeResponsive;
+import vn.edu.tdc.doan_d2.model.responsive.category.CategoryUtils;
 import vn.edu.tdc.doan_d2.view.MyAdapter;
-import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModel;
+import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
+import vn.edu.tdc.doan_d2.viewmodel.cuisine.CuisineViewModel;
+
 
 public class CategoryFragment extends Fragment implements PaginationInterface {
     private FragmentCategoryBinding binding;
@@ -45,7 +47,8 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
     private SearchView searchView;
     private ActivityMainBinding bindingMain;
 
-    private MainActivityViewModel viewModel;
+    private CategoryViewModel viewModelCategory;
+    private CuisineViewModel viewModelCuisine;
     private MyAdapter adapter;
     private PaginationInterface paginationInterface;
     private int currentPage = 0;
@@ -58,6 +61,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
     private CategoryFilter categoryFilter;
     private MutableLiveData<String> currentQueryLiveData = new MutableLiveData<>();
     private String currentQuery = "";
+    private String key;
 
 
     public void setSearchView(SearchView searchView) {
@@ -75,8 +79,8 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
         }
     }
 
-    public void setViewModel(MainActivityViewModel viewModel) {
-        this.viewModel = viewModel;
+    public void setViewModelCategory(CategoryViewModel viewModel) {
+        this.viewModelCategory = viewModel;
     }
 
 
@@ -106,23 +110,23 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
-        categoryUtils = new CategoryUtils(viewModel, new CategoryRecipeResponsive(requireActivity().getApplication(), viewModel)); // Khởi tạo categoryUtils
-        categoryFilter = new CategoryFilter(viewModel, new CategoryRecipeResponsive(requireActivity().getApplication(), viewModel));
+        viewModelCategory = new ViewModelProvider(this).get(CategoryViewModel.class);
+        categoryUtils = new CategoryUtils(viewModelCategory, new CategoryRecipeResponsive(requireActivity().getApplication(), viewModelCategory)); // Khởi tạo categoryUtils
+        categoryFilter = new CategoryFilter(viewModelCategory, new CategoryRecipeResponsive(requireActivity().getApplication(), viewModelCategory));
         setupRecyclerView();
         // Khởi tạo categoryUtils
-        viewModel.getCategoriesCountLiveData().observe(getViewLifecycleOwner(), total -> {
+        viewModelCategory.getCategoriesCountLiveData().observe(getViewLifecycleOwner(), total -> {
             this.categoriesCount = total;
         });
 
         Log.d("Query", currentQuery);
 
-                loadCategoriesForSearch();
+        loadCategoriesForSearch();
 
-        loadCategoriesForPage(currentPage);
+        loadCategoriesForPage(currentPage,key);
     }
 
-    private void updateCategoriesInAdapter(ArrayList<Category> newCategories) {
+    private void updateCategoriesInAdapter(ArrayList<BaseCategory> newCategories) {
         if (!binding.recyclerview.isComputingLayout()) {
             isUpdatingAdapter = true;
             if (newCategories != null) {// Bắt đầu cập nhật Adapter
@@ -144,7 +148,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
                 });
             }
             isUpdatingAdapter = false; // Kết thúc cập nhật Adapter
-        }else {
+        } else {
             // RecyclerView đang trong quá trình tính toán layout, không thực hiện cập nhật ngay lúc này
             Log.d("RecyclerView111111111", "Đang trong quá trình tính toán layout, không thực hiện cập nhật ngay lúc này");
         }
@@ -158,16 +162,16 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
 
     @Override
     public void goToPreviousPage() {
-        if (viewModel != null) {
+        if (viewModelCategory != null) {
             int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
             Log.d("total", totalPage + "");
             if (currentPage > 0) {
                 currentPage--;
-                loadCategoriesForPage(currentPage);
+                loadCategoriesForPage(currentPage,key);
 
             } else {
                 currentPage = totalPage - 1;
-                loadCategoriesForPage(currentPage);
+                loadCategoriesForPage(currentPage,key);
             }
         }
 
@@ -177,14 +181,14 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
     public void goToNextPage() {
         int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
 
-        if (viewModel != null) { // Kiểm tra null
+        if (viewModelCategory != null) { // Kiểm tra null
             if (currentPage < totalPage - 1) {
                 currentPage++;
-                loadCategoriesForPage(currentPage);
+                loadCategoriesForPage(currentPage,key);
 
             } else {
                 currentPage = 0;
-                loadCategoriesForPage(currentPage);
+                loadCategoriesForPage(currentPage,key);
             }
         }
 
@@ -197,10 +201,10 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
 
 
     private void loadCategoriesForSearch() {
-        viewModel.getFilteredCategoriesLiveData().observe(getViewLifecycleOwner(), new Observer<ArrayList<Category>>() {
+        viewModelCategory.getFilteredCategoriesLiveData().observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseCategory>>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
-            public void onChanged(ArrayList<Category> categories) {
+            public void onChanged(ArrayList<BaseCategory> categories) {
                 // Cập nhật Adapter
                 if (categories != null) {
                     updateCategoriesInAdapter(categories);
@@ -227,10 +231,12 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
                     // Gọi phương thức tìm kiếm trong fragment
                     currentQueryLiveData.setValue(query);
                     currentPage = 0;
-                    viewModel.updateSearchQuery(query, currentPage, PAGE_SIZE, getViewLifecycleOwner());
+                    viewModelCategory.updateSearchQuery(query, currentPage, PAGE_SIZE, getViewLifecycleOwner());
                     return true;
                 }
 
@@ -238,42 +244,64 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
                 public boolean onQueryTextChange(String newText) {
                     currentQueryLiveData.setValue(newText);
                     currentPage = 0;
-                    viewModel.updateSearchQuery(newText, currentPage, PAGE_SIZE, getViewLifecycleOwner()); // Cập nhật ViewModel với truy vấn tìm kiếm mới
+                    viewModelCategory.updateSearchQuery(newText, currentPage, PAGE_SIZE, getViewLifecycleOwner()); // Cập nhật ViewModel với truy vấn tìm kiếm mới
                     return true;
                 }
             });
         }
     }
 
-    public void loadCategoriesForPage(int page) {
-                viewModel.loadCategoriesForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<Category>>() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onChanged(ArrayList<Category> categories) {
-                        // Cập nhật Adapter
+    public void loadCategoriesForPage(int page, String key) {
+        if (key.equals("category")) {
+            viewModelCategory.loadCategoriesForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<Category>>() {
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onChanged(ArrayList<BaseCategory> categories) {
+                    // Cập nhật Adapter
 
-                        if (categories != null) {
-                            if (adapter == null) {
-                                adapter = new MyAdapter(requireContext(), categories);
-                                binding.recyclerview.setAdapter(adapter);
+                    if (categories != null) {
+                        if (adapter == null) {
+                            adapter = new MyAdapter(requireContext(), categories);
+                            binding.recyclerview.setAdapter(adapter);
 
-                            } else {
-
-                                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), categories));
-                                adapter.setData(categories);
-                                diffResult.dispatchUpdatesTo(adapter);
-                            }
                         } else {
-                            // Handle loading error (e.g., show error message)
-                            Log.e("CategoryFragment", "Failed to load categories for page " + page);
+                            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), categories));
+                            adapter.setData(categories);
+                            diffResult.dispatchUpdatesTo(adapter);
                         }
-
-                        binding.recyclerview.scrollToPosition(0);
-                        isLoading = false; // Finish loading
-
-
+                    } else {
+                        // Handle loading error (e.g., show error message)
+                        Log.e("CategoryFragment", "Failed to load categories for page " + page);
                     }
-                });
-    }
+                    binding.recyclerview.scrollToPosition(0);
+                    isLoading = false; // Finish loading
+                }
+            });
+        }else{
+            viewModelCuisine.loadCuisineForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<Cuisine>>() {
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onChanged(ArrayList<Cuisine> cuisines) {
+                    // Cập nhật Adapter
 
+                    if (cuisines != null) {
+                        if (adapter == null) {
+                            adapter = new MyAdapter(requireContext(), cuisines);
+                            binding.recyclerview.setAdapter(adapter);
+
+                        } else {
+                            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), cuisines));
+                            adapter.setData(cuisines);
+                            diffResult.dispatchUpdatesTo(adapter);
+                        }
+                    } else {
+                        // Handle loading error (e.g., show error message)
+                        Log.e("CategoryFragment", "Failed to load categories for page " + page);
+                    }
+                    binding.recyclerview.scrollToPosition(0);
+                    isLoading = false; // Finish loading
+                }
+            });
+        }
+    }
 }

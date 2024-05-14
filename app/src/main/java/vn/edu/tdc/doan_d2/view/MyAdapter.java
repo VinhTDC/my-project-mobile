@@ -27,18 +27,22 @@ import java.util.HashSet;
 import vn.edu.tdc.doan_d2.R;
 
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryItemBinding;
+import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
+import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private Context context;
-    private ArrayList<Category> data;
+    private ArrayList<BaseCategory> data;
+
+    private ArrayList<Cuisine> dataCuisines;
 
 
-    public MyAdapter(Context context, ArrayList<Category> categories) {
+    public MyAdapter(Context context, ArrayList<BaseCategory> data) {
         this.context = context;
-        this.data = categories;
+        this.data = data;
         setHasStableIds(false);
     }
     @NonNull
@@ -52,19 +56,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
-        if (data != null && !data.isEmpty() && position >= 0 && position < data.size()) {
-            Category category = data.get(position);
+        BaseCategory item = data.get(position);
+        if (data != null && !data.isEmpty() && position >= 0 && position < data.size() && item instanceof Category) {
+            Category baseCategory =(Category) data.get(position);
             Glide.get(context).clearMemory();
-            String capitalizedName = category.getName().substring(0, 1).toUpperCase() + category.getName().substring(1);
-            category.setName(capitalizedName);
-            holder.bind(category);
+            String capitalizedName = baseCategory.getName().substring(0, 1).toUpperCase() + baseCategory.getName().substring(1);
+            baseCategory.setName(capitalizedName);
+            holder.bind(baseCategory);
+        }else if (item instanceof Cuisine){
+//            Cuisine cuisine = data.get(position);
+            Cuisine baseCategory =(Cuisine) data.get(position);
+            Glide.get(context).clearMemory();
+            String capitalizedName = baseCategory.getName().substring(0, 1).toUpperCase() + baseCategory.getName().substring(1);
+            baseCategory.setName(capitalizedName);
+            holder.bind(baseCategory);
         }
     }
 
     @Override
     public int getItemCount() {
-        Log.d("size" ,data.size()+"");
         return data != null ? data.size() : 0;
     }
 
@@ -83,9 +93,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 }
             });
         }
-
-        public void bind(Category category) {
-            // Lấy hình ảnh từ Firebase Storage
+        private void bindCategory(Category category) {
             String imageUrl = category.getImgUrl();
 
             // Kiểm tra xem imageUrl không null và không rỗng
@@ -144,16 +152,84 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             // Đặt tên danh mục
             categoryListItemBinding.nameCategory.setText(category.getName());
         }
+        private void bindCuisine(Cuisine cuisine) {
+            String imageUrl = cuisine.getImgUrl();
+
+            // Kiểm tra xem imageUrl không null và không rỗng
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+
+                Glide.with(categoryListItemBinding.imageCategory.getContext())
+                        .asGif() // Thiết lập tải dưới dạng GIF
+                        .load(R.drawable.loadding1) // Đặt tên file loading.gif
+                        .into(categoryListItemBinding.imageCategory);
+                // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReference().child(imageUrl);
+
+                // Kiểm tra xem tệp tồn tại trong Firebase Storage
+                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Glide.with(categoryListItemBinding.imageCategory.getContext())
+                                .load(uri)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .into(categoryListItemBinding.imageCategory);
+                        Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        if (exception instanceof StorageException) {
+                            StorageException storageException = (StorageException) exception;
+                            int errorCode = storageException.getErrorCode();
+                            String errorMessage = storageException.getMessage();
+
+                            // Xử lý dựa trên mã lỗi và thông điệp
+                            switch (errorCode) {
+                                case StorageException.ERROR_OBJECT_NOT_FOUND:
+                                    // Tệp không tồn tại, xử lý tương ứng
+                                    Log.e("FirebaseStorage1", "File does not exist: " + errorMessage);
+                                    break;
+                                default:
+                                    // Xử lý mặc định hoặc thông báo lỗi
+                                    break;
+                            }
+                        } else {
+
+                            // Xử lý các loại ngoại lệ khác
+                            Log.e("FirebaseStorage2", "Error: " + exception.getMessage());
+                        }
+                        Log.e("FirebaseStorage3", "File does not exist: " + exception.getMessage());
+                    }
+                });
+            } else {
+                // Xử lý trường hợp imageUrl là null hoặc rỗng
+
+            }
+
+            // Đặt tên danh mục
+            categoryListItemBinding.nameCategory.setText(cuisine.getName());
+        }
+        public void bind(BaseCategory baseCategory) {
+            if (baseCategory instanceof Category) {
+                bindCategory((Category) baseCategory);
+            } else if (baseCategory instanceof Cuisine) {
+                bindCuisine((Cuisine) baseCategory);
+            }
+        }
+
     }
 
-    public void setData(ArrayList<Category> newData) {
+
+    public void setData(ArrayList<BaseCategory> newData) {
         CategoryDiffCallback diffCallback = new CategoryDiffCallback(data, newData);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
         data.clear();
-        data.addAll(newData);
+        data .addAll(newData);
         diffResult.dispatchUpdatesTo(this);
     }
-    public ArrayList<Category> getData(){
+    public ArrayList<BaseCategory> getData(){
         return data;
     }
 

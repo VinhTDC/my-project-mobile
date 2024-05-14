@@ -1,11 +1,10 @@
-package vn.edu.tdc.doan_d2.viewmodel;
+package vn.edu.tdc.doan_d2.viewmodel.category;
 
 import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -15,19 +14,19 @@ import java.util.ArrayList;
 
 
 import vn.edu.tdc.doan_d2.model.category.Category;
-import vn.edu.tdc.doan_d2.model.responsive.CategoryFilter;
-import vn.edu.tdc.doan_d2.model.responsive.CategoryRecipeResponsive;
-import vn.edu.tdc.doan_d2.model.responsive.CategoryUtils;
+import vn.edu.tdc.doan_d2.model.responsive.category.CategoryFilter;
+import vn.edu.tdc.doan_d2.model.responsive.category.CategoryRecipeResponsive;
+import vn.edu.tdc.doan_d2.model.responsive.category.CategoryUtils;
 
 
-public class MainActivityViewModel extends AndroidViewModel {
+public class CategoryViewModel extends AndroidViewModel {
     private final CategoryRecipeResponsive recipeCategoryResponsive;
     private final CategoryFilter categoryFilter;
     private final MutableLiveData<Integer> categoriesCountLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<ArrayList<Category>> filteredCategoriesLiveData = new MutableLiveData<>();
     private CategoryUtils categoryUtils;
 
-    public MainActivityViewModel(@NonNull Application application) {
+    public CategoryViewModel(@NonNull Application application) {
         super(application);
         this.recipeCategoryResponsive = new CategoryRecipeResponsive(application, this);
         this.categoryFilter = new CategoryFilter(this,recipeCategoryResponsive );

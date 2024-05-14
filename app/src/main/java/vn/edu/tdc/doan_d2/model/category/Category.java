@@ -1,6 +1,8 @@
 package vn.edu.tdc.doan_d2.model.category;
 
-public class Category {
+import vn.edu.tdc.doan_d2.model.BaseCategory;
+
+public class Category implements BaseCategory {
     private String id;
     private String name;
     private String imgUrl;
