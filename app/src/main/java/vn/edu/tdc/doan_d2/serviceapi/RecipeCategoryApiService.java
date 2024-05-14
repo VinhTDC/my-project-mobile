@@ -9,6 +9,4 @@ public interface RecipeCategoryApiService {
     @GET("categories")
     Call<CategoryResponse> getRecipeCategory(@Query("rapidapi-key") String key);
 }
-//public  interface RecipeApiService{
-//
-//}
+

@@ -1,17 +1,24 @@
 package vn.edu.tdc.doan_d2;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.databinding.DataBindingUtil;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -25,48 +32,35 @@ import vn.edu.tdc.doan_d2.view.MyAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.MainActivityViewModelRetrofit;
 
-public class MainActivity extends AppCompatActivity implements PaginationInterface  {
-    private RecyclerView recyclerView;
+public class MainActivity extends AppCompatActivity implements PaginationInterface {
     private MyAdapter myAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ActivityMainBinding binding;
     private MainActivityViewModel viewModel;
     private MainActivityViewModelRetrofit loadData;
     private static final String PREF_RETROFIT_RUN_FLAG = "pref_retrofit_run_flag";
-    private int currentPageActiviTy;
     private CategoryFragment fragment;
+    private String tagFragment = "CATEGORY_FRAGMENT_TAG";
+    private androidx.appcompat.widget.SearchView searchView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(
-                this,
-                R.layout.activity_main
-        );
-
-        viewModel = new ViewModelProvider(this)
-                .get(MainActivityViewModel.class);
-
-
-
-
-//        loadData = new ViewModelProvider(this).get(MainActivityViewModelRetrofit.class);
-
-//        getSupportFragmentManager().beginTransaction()
-//                .add(R.id.fragmentContainer, new CategoryFragment())
-//                .commit();
-        addCategoryFragmentWithPaginationInterface();
-        // Kiểm tra xem Retrofit đã được chạy trong ngày hôm nay hay không
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+         // Khởi tạo ViewModel
 //        if (!isRetrofitRunToday()) {
-//            // Chạy Retrofit
 //            runRetrofit();
-//            // Cập nhật cờ trong SharedPreferences để đánh dấu rằng Retrofit đã được chạy trong ngày hôm nay
 //            updateRetrofitRunFlag();
 //        }
+        swipeRefreshLayout = binding.swipeLayout;
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
-
-//        getCategories();
         binding.buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,42 +74,14 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
             }
         });
 
-
-        swipeRefreshLayout = binding.swipeLayout;
-        swipeRefreshLayout.setColorSchemeResources(R.color.black);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(false);
-//                getCategories();
-//                if (viewModel != null) {
-//                    viewModel.loadCategoriesForPage(currentPageActiviTy, pageSize).observe(this, categories -> {
-//                        // Cập nhật Adapter
-//                        if (myAdapter == null) {
-//                            myAdapter = new MyAdapter(MainActivity.this, categories);
-//                            recyclerView.setAdapter(myAdapter);
-//                        } else {
-//                            myAdapter.setData(categories);
-//                            myAdapter.notifyDataSetChanged();
-//                        }
-//                    });
-//                }
-            }
-        });
-
+        searchView = binding.topAppBar.findViewById(R.id.searchView);
+        if (savedInstanceState == null) {
+            addCategoryFragmentWithPaginationInterface();
+            fragment.setSearchView(searchView);
+        }
 
     }
 
-    //    private void getCategories() {
-//        viewModel.getAllCategory().observe(this, new Observer<ArrayList<Category>>() {
-//            @Override
-//            public void onChanged(ArrayList<Category> newCategories) {
-//                displayCategoryInRecyclerView(newCategories);
-//            }
-//
-//        });
-//
-//    }
     private void loadDataRetrofitToFriebase() {
         loadData.getAllCategoryRetrofit().observe(this, new Observer<ArrayList<String>>() {
             @Override
@@ -125,19 +91,6 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
 
     }
 
-    //    private void displayCategoryInRecyclerView(ArrayList<Category> categories) {
-//        recyclerView = binding.recyclerview;
-//        // Tạo một danh sách mới để lưu các chuỗi đã được chuyển đổi
-//        ArrayList<Category> capitalizedCategories = categories;
-//
-//        myAdapter = new MyAdapter(this, capitalizedCategories);
-//
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        recyclerView.setAdapter(myAdapter);
-//
-//        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-//
-//    }
     private boolean isRetrofitRunToday() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String lastRunDate = prefs.getString(PREF_RETROFIT_RUN_FLAG, "");
@@ -156,17 +109,36 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
         loadDataRetrofitToFriebase();
     }
 
-
-
-
-
-
     private void addCategoryFragmentWithPaginationInterface() {
-         fragment = new CategoryFragment();
-        fragment.setPaginationInterface(this);
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, fragment).commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        CategoryFragment existingFragment = (CategoryFragment) fragmentManager.
+                findFragmentByTag(tagFragment);
+        if (existingFragment == null) {
+            fragment = new CategoryFragment();
+            fragment.setPaginationInterface(this);
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, fragment, tagFragment)
+                    .commit();
+        } else {
+            fragment = new CategoryFragment();
+            fragment.setPaginationInterface(this);
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, fragment, tagFragment)
+                    .commit();
+        }
+
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment1 = fragmentManager.findFragmentById(R.id.fragmentContainer);
+        if (fragment1 != null) {
+            fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+        }
+    }
 
     @Override
     public void goToPreviousPage() {
@@ -182,4 +154,5 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
     public void onPageChanged(int currentPage) {
 
     }
+
 }
