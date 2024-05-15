@@ -1,5 +1,7 @@
 package vn.edu.tdc.doan_d2.model.category;
 
+import java.util.Objects;
+
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 
 public class Category implements BaseCategory {
@@ -40,5 +42,18 @@ public class Category implements BaseCategory {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Category)) return false;
+        Category category = (Category) o;
+        return Objects.equals(getId(), category.getId()) && Objects.equals(getName(), category.getName()) && Objects.equals(getImgUrl(), category.getImgUrl());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getImgUrl());
     }
 }

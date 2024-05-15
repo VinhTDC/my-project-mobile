@@ -20,7 +20,7 @@ public class CategoryViewModelRetrofit extends AndroidViewModel {
     }
     //Live Data
 
-    public MutableLiveData<ArrayList<String>> getAllCategoryRetrofit(String key){
-        return recipeCategoryResponsiveRetrofit.getDataMutableLiveDataRetrofit(key);
+    public MutableLiveData<ArrayList<String>> getAllCategoryRetrofit(boolean isCategory){
+        return recipeCategoryResponsiveRetrofit.getDataMutableLiveDataRetrofit(isCategory);
     }
 }

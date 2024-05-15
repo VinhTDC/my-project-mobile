@@ -12,8 +12,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
@@ -38,6 +41,7 @@ import java.util.Locale;
 import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.fragment.CategoryFragment;
 import vn.edu.tdc.doan_d2.fragment.PaginationInterface;
+import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
 import vn.edu.tdc.doan_d2.view.MyAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
@@ -59,18 +63,19 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
     private Toolbar toolbar;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
+        viewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
         setupToolbar();
+//         Khởi tạo ViewModel
+        runRetrofit();
+        if (!isRetrofitRunToday()) {
 
-        // Khởi tạo ViewModel
-//        if (!isRetrofitRunToday()) {
-//            runRetrofit();
-//            updateRetrofitRunFlag();
-//        }
+            updateRetrofitRunFlag();
+        }
         swipeRefreshLayout = binding.swipeLayout;
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -91,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
                 fragment.goToPreviousPage();
             }
         });
-
+        loadData = new CategoryViewModelRetrofit(getApplication());
         searchView = binding.toolbar.findViewById(R.id.searchView);
         if (savedInstanceState == null) {
             addCategoryFragmentWithPaginationInterface();
@@ -118,24 +123,24 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int itemId = menuItem.getItemId();
                 if (itemId == R.id.id_category) {
-
-                } else if (itemId == R.id.id_cuisine) {
-
+                    viewModel.setIsCategory(true);
+                } else {
+                    viewModel.setIsCategory(false);
                 }
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
+
         // Thiết lập ActionBarDrawerToggle
-        toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        );
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
 
     private void loadDataRetrofitToFirebase() {
-        loadData.getAllCategoryRetrofit("categories").observe(this, new Observer<ArrayList<String>>() {
+        loadData = new CategoryViewModelRetrofit(getApplication());
+        loadData.getAllCategoryRetrofit(true).observe(this, new Observer<ArrayList<String>>() {
             @Override
             public void onChanged(ArrayList<String> strings) {
             }
@@ -164,20 +169,17 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
     private void addCategoryFragmentWithPaginationInterface() {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        CategoryFragment existingFragment = (CategoryFragment) fragmentManager.
-                findFragmentByTag(tagFragment);
+
+        CategoryFragment existingFragment = (CategoryFragment) fragmentManager.findFragmentByTag(tagFragment);
         if (existingFragment == null) {
             fragment = new CategoryFragment();
             fragment.setPaginationInterface(this);
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, fragment, tagFragment)
-                    .commit();
+            fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment, tagFragment).commit();
         } else {
             fragment = new CategoryFragment();
             fragment.setPaginationInterface(this);
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, fragment, tagFragment)
-                    .commit();
+            fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment, tagFragment).commit();
+
         }
 
     }

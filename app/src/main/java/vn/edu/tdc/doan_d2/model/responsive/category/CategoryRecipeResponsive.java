@@ -14,18 +14,20 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Category;
+import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
-
 
 
 public class CategoryRecipeResponsive implements CategoryDataSource {
     private Application application;
-    private final MutableLiveData<ArrayList<Category>> categoriesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<BaseCategory>> categoriesLiveData = new MutableLiveData<>();
     private CategoryViewModel viewModel;
 
-    private ArrayList<Category> categories;
+    private ArrayList<BaseCategory> categories;
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private boolean isCategory ;
     private boolean isDataLoaded = false;
 
 
@@ -35,10 +37,12 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     }
 
     @Override
-    public MutableLiveData<ArrayList<Category>> getAllCategories() {
-        if (categories == null && !isLoading.getValue()) {
-            loadCategoriesFromFirebase();
-        } else if (categories != null && !isDataLoaded) { // Chỉ cập nhật khi dữ liệu mới được tải
+    public MutableLiveData<ArrayList<BaseCategory>> getAllCategories(boolean isCategory) {
+        if (categories == null) {
+            loadCategoriesFromFirebase(isCategory);
+            Log.d("getAllCategories", "call");
+        } else if (categories != null && !isDataLoaded) {
+            Log.d("getAllCategories", categories.size()+"");
             isDataLoaded = true;
             categoriesLiveData.postValue(categories);
             isLoading.setValue(false);
@@ -47,11 +51,11 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     }
 
     @Override
-    public void loadCategoriesFromFirebase() {
+    public void loadCategoriesFromFirebase(boolean isCategory) {
         if (categories == null) {
             categories = new ArrayList<>();
         }
-        getCategoriesFromFirebase().addValueEventListener(new ValueEventListener() {
+        getCategoriesFromFirebase(isCategory).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -69,9 +73,13 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
                         if (categorySnapshot.child("imgUrl").exists()) {
                             imageUrl = categorySnapshot.child("imgUrl").getValue(String.class);
                         }
-                        Category category = new Category(id, name, imageUrl);
+                        BaseCategory category;
+                        if (isCategory) {
+                            category = new Category(id, name, imageUrl);
+                        } else {
+                            category = new Cuisine(id, name, imageUrl);
+                        }
                         categories.add(category);
-
                     }
                 } else {
                     Log.d("Firebase", "Data snapshot is empty");
@@ -79,6 +87,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
                 categoriesLiveData.postValue(categories);
                 isLoading.setValue(false);
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 categoriesLiveData.setValue(null);
@@ -88,10 +97,18 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     }
 
     @Override
-    public DatabaseReference getCategoriesFromFirebase() {
-        Log.d("getCategoriesFromFirebase", "call");
-        return FirebaseDatabase.getInstance().getReference("categories"); // Giả sử 'categories' là node chính
+    public DatabaseReference getCategoriesFromFirebase(boolean isCategory) {
+        if (isCategory) {
+            return FirebaseDatabase.getInstance().getReference("categories");
+        } else {
+            return FirebaseDatabase.getInstance().getReference("cuisines");
+        }
     }
+    public void resetCategories(){
+        categories = null;
+        isDataLoaded = false;
+    }
+
 
 }
 //    public ArrayList<Category> getCategoriesByRange(int startIndex, int endIndex) {
