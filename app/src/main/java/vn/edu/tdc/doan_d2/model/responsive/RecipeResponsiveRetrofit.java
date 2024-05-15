@@ -17,6 +17,7 @@ import vn.edu.tdc.doan_d2.R;
 import vn.edu.tdc.doan_d2.model.category.Categories;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.category.CategoryResponse;
+
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 import vn.edu.tdc.doan_d2.model.cuisine.CuisineResponse;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisines;
@@ -25,19 +26,20 @@ import vn.edu.tdc.doan_d2.serviceapi.RecipeCuisineApiService;
 import vn.edu.tdc.doan_d2.serviceapi.RetrofitInstance;
 
 
-public class  RecipeResponsiveRetrofit {
+public class RecipeResponsiveRetrofit {
     private final MutableLiveData<ArrayList<String>> dataMutableLiveDataRetrofit = new MutableLiveData<ArrayList<String>>();
     private Categories categories;
     private Cuisines cuisines;
     private ArrayList<String> data = new ArrayList<>();
     private final Application application;
+
     public RecipeResponsiveRetrofit(Application application) {
         this.application = application;
     }
 
-    public MutableLiveData<ArrayList<String>> getDataMutableLiveDataRetrofit(String key) {
+    public MutableLiveData<ArrayList<String>> getDataMutableLiveDataRetrofit(boolean isCategory) {
 
-        if(key.equals("category")){
+        if (isCategory) {
             RecipeCategoryApiService recipeCategoryApiService = RetrofitInstance.getServiceCategory();
             Call<CategoryResponse> call = recipeCategoryApiService.getRecipeCategory(application.getApplicationContext().getString(R.string.api_key));
             call.enqueue(new Callback<CategoryResponse>() {
@@ -52,9 +54,15 @@ public class  RecipeResponsiveRetrofit {
                         // Duyệt qua danh sách tên category lấy từ Retrofit
                         for (String categoryName : categories.getData()) {
                             Category category = new Category();
-                            category.setName(categoryName);
+                            String name  = categoryName.toLowerCase().replace("!","");
+                            if ( categoryName != null) {
+                                category.setName(name);
+                            } else {
+                                category.setName("Loading");
+                                category.setImgUrl(uploadImageToFirebaseStorage("Loading" + ".jpg"));
+                            }
                             // Giả sử tạm thời chưa có đường dẫn ảnh
-                            category.setImgUrl(uploadImageToFirebaseStorage(categoryName));
+                            category.setImgUrl(uploadImageToFirebaseStorage(name));
                             // Lưu category vào Firebase
                             saveCategoryToFirebase(category);
                         }
@@ -68,8 +76,8 @@ public class  RecipeResponsiveRetrofit {
 
                 }
             });
-        }else {
-            cuisines = new Cuisines();
+        } else {
+
             RecipeCuisineApiService recipeCuisineApiService = RetrofitInstance.getServiceCuisine();
             Call<CuisineResponse> call = recipeCuisineApiService.getRecipeCuisine(application.getApplicationContext().getString(R.string.api_key));
             call.enqueue(new Callback<CuisineResponse>() {
@@ -78,15 +86,23 @@ public class  RecipeResponsiveRetrofit {
                     CuisineResponse cuisineResponse = response.body();
                     if (cuisineResponse != null && cuisineResponse.getCuisines() != null) {
                         cuisines = cuisineResponse.getCuisines();
-                        data = (ArrayList<String>) categories.getData();
+                        data = (ArrayList<String>) cuisines.getData();
                         dataMutableLiveDataRetrofit.setValue(data);
                         Log.d("API_Response", "Data: " + data.toString());
                         // Duyệt qua danh sách tên category lấy từ Retrofit
                         for (String cuisineName : cuisines.getData()) {
                             Cuisine cuisine = new Cuisine();
-                            cuisine.setName(cuisineName);
+                            String name = cuisineName.toLowerCase().replace("!","");
+                            if ( cuisineName != null && cuisineName != "") {
+                                cuisine.setName(name);
+                                cuisine.setImgUrl(uploadImageToFirebaseStorage(name));
+                            } else {
+                                cuisine.setName("Loading");
+                                cuisine.setImgUrl(uploadImageToFirebaseStorage("Loading" + ".jpg"));
+                            }
+
                             // Giả sử tạm thời chưa có đường dẫn ảnh
-                            cuisine.setImgUrl(uploadImageToFirebaseStorage(cuisineName));
+
                             // Lưu category vào Firebase
                             saveCategoryToFirebase(cuisine);
                         }
@@ -105,23 +121,38 @@ public class  RecipeResponsiveRetrofit {
 
         return dataMutableLiveDataRetrofit;
     }
+
     private void saveCategoryToFirebase(Category category) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference categoriesRef = database.getReference("categories");
 
         // Tạo key tự động cho mỗi category
-        String key = category.getName().toLowerCase().replace(" ", "_");
-        categoriesRef.child(key).setValue(category);
+        if ( category.getName() != null && category.getName() != "") {
+            String key = category.getName().toLowerCase().replace(" ", "_");
+            categoriesRef.child(key).setValue(category);
+        } else {
+            String key = "Loading";
+            categoriesRef.child(key).setValue(category);
+        }
     }
+
     private void saveCategoryToFirebase(Cuisine cuisine) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference categoriesRef = database.getReference("cuisines");
 
         // Tạo key tự động cho mỗi category
-        String key = cuisine.getName().toLowerCase().replace(" ", "_");
-        categoriesRef.child(key).setValue(cuisine);
+        if ( cuisine.getName() != null && cuisine.getName() != "") {
+            String key = cuisine.getName().toLowerCase().replace(" ", "_").trim();
+            categoriesRef.child(key).setValue(cuisine);
+        } else {
+            String key = "Loading";
+            categoriesRef.child(key).setValue(cuisine);
+        }
+
     }
+
     private String uploadImageToFirebaseStorage(String categoryName) {
-        return  categoryName + ".jpg";
+
+        return categoryName + ".jpg";
     }
 }

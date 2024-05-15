@@ -1,5 +1,7 @@
     package vn.edu.tdc.doan_d2.model.responsive.category;
 
+    import android.util.Log;
+
     import androidx.annotation.NonNull;
     import androidx.lifecycle.MutableLiveData;
 
@@ -10,7 +12,10 @@
 
     import java.util.ArrayList;
 
+    import vn.edu.tdc.doan_d2.model.BaseCategory;
     import vn.edu.tdc.doan_d2.model.category.Category;
+
+    import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
     import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 
 
@@ -20,34 +25,32 @@
         private CategoryRecipeResponsive responsive;
         private CategoryViewModel viewModel;
 
-        public MutableLiveData<ArrayList<Category>> filterCategories(String query) {
-            MutableLiveData<ArrayList<Category>> filteredLiveData = new MutableLiveData<ArrayList<Category>>();
+        public MutableLiveData<ArrayList<BaseCategory>> filterCategories(String query, boolean isCategory) {
+            MutableLiveData<ArrayList<BaseCategory>> filteredLiveData = new MutableLiveData<>();
             isLoading.setValue(true); // Bắt đầu quá trình tải
             if (!query.isEmpty()) {
-                Query queryRef = responsive.getCategoriesFromFirebase().orderByChild("name")
+                Query queryRef = responsive.getCategoriesFromFirebase(isCategory).orderByChild("name")
                         .startAt(query.trim().toLowerCase())
                         .endAt(query.trim().toLowerCase() + "\uf8ff"); //
                 queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        ArrayList<Category> filteredCategories = new ArrayList<>();
+                        ArrayList<BaseCategory> filteredCategories = new ArrayList<>();
                         if (dataSnapshot.exists()) {
                             for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
-                                String id = "";
-                                if (categorySnapshot.child("id").exists()) {
-                                    id = categorySnapshot.child("id").getValue(String.class);
+                                BaseCategory baseCategory;
+                                if(isCategory){
+                                    baseCategory = categorySnapshot.getValue(Category.class);
+
                                 }
-                                String name = "";
-                                if (categorySnapshot.child("name").exists()) {
-                                    name = categorySnapshot.child("name").getValue(String.class);
+                                else {
+                                    baseCategory = categorySnapshot.getValue(Cuisine.class);
                                 }
-                                String imageUrl = "";
-                                if (categorySnapshot.child("imgUrl").exists()) {
-                                    imageUrl = categorySnapshot.child("imgUrl").getValue(String.class);
+                                if(baseCategory != null){
+                                    filteredCategories.add(baseCategory);
                                 }
-                                Category category = new Category(id, name, imageUrl);
-                                filteredCategories.add(category);
                             }
+
                             filteredLiveData.postValue(filteredCategories);
                             isLoading.setValue(false);
                         } else {
@@ -64,6 +67,7 @@
             }else {
 
             }
+            Log.d("baseCategory",filteredLiveData.getValue()+"");
             return filteredLiveData;
         }
         public CategoryFilter(CategoryViewModel viewModel, CategoryRecipeResponsive responsive) {

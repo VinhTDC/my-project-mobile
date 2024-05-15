@@ -1,5 +1,7 @@
 package vn.edu.tdc.doan_d2.view;
 
+
+
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -22,7 +24,6 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import vn.edu.tdc.doan_d2.R;
 
@@ -37,18 +38,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private Context context;
     private ArrayList<BaseCategory> data;
 
-    private ArrayList<Cuisine> dataCuisines;
 
 
     public MyAdapter(Context context, ArrayList<BaseCategory> data) {
+
         this.context = context;
         this.data = data;
         setHasStableIds(false);
     }
+    @Override
+    public long getItemId(int position) {
+        BaseCategory item = data.get(position);
+        return item.getId().hashCode(); // Giả sử BaseCategory có thuộc tính id
+    }
+
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d("MyViewHolder", "call");
         FragmentCategoryItemBinding binding = DataBindingUtil
                 .inflate(LayoutInflater.from(parent.getContext()), R.layout.fragment_category_item, parent, false);
         return new MyViewHolder(binding);
@@ -57,19 +63,28 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         BaseCategory item = data.get(position);
-        if (data != null && !data.isEmpty() && position >= 0 && position < data.size() && item instanceof Category) {
-            Category baseCategory =(Category) data.get(position);
-            Glide.get(context).clearMemory();
-            String capitalizedName = baseCategory.getName().substring(0, 1).toUpperCase() + baseCategory.getName().substring(1);
-            baseCategory.setName(capitalizedName);
-            holder.bind(baseCategory);
-        }else if (item instanceof Cuisine){
-//            Cuisine cuisine = data.get(position);
-            Cuisine baseCategory =(Cuisine) data.get(position);
-            Glide.get(context).clearMemory();
-            String capitalizedName = baseCategory.getName().substring(0, 1).toUpperCase() + baseCategory.getName().substring(1);
-            baseCategory.setName(capitalizedName);
-            holder.bind(baseCategory);
+        Log.d("dzxczcz",item.getName());
+
+        if (data != null && !data.isEmpty() && position >= 0 && position < data.size()) {
+            if(item instanceof  Category) {
+                Category baseCategory = (Category) data.get(position);
+                Glide.get(context).clearMemory();
+                if (baseCategory.getName() != null && !baseCategory.getName().isEmpty()) {
+                    String capitalizedName = baseCategory.getName().substring(0, 1).toUpperCase() +
+                            baseCategory.getName().substring(1);
+                    baseCategory.setName(capitalizedName);
+                }
+                holder.bind(baseCategory);
+            }else {
+                Cuisine baseCategory = (Cuisine) data.get(position);
+                Glide.get(context).clearMemory();
+                if (baseCategory.getName() != null && !baseCategory.getName().isEmpty()) {
+                    String capitalizedName = baseCategory.getName().substring(0, 1).toUpperCase() +
+                            baseCategory.getName().substring(1);
+                    baseCategory.setName(capitalizedName);
+                }
+                holder.bind(baseCategory);
+            }
         }
     }
 
@@ -223,10 +238,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
 
     public void setData(ArrayList<BaseCategory> newData) {
-        CategoryDiffCallback diffCallback = new CategoryDiffCallback(data, newData);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(getData(), newData ));
         data.clear();
-        data .addAll(newData);
+        data.addAll(newData);
         diffResult.dispatchUpdatesTo(this);
     }
     public ArrayList<BaseCategory> getData(){
