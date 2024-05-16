@@ -149,7 +149,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         .into(categoryListItemBinding.imageCategory);
                 // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
                 FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference().child(imageUrl);
+                StorageReference storageRef = storage.getReference().child("categories/"+imageUrl);
 
                 // Kiểm tra xem tệp tồn tại trong Firebase Storage
                 storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

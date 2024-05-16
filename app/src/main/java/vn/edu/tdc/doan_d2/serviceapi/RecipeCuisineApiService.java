@@ -8,4 +8,5 @@ import vn.edu.tdc.doan_d2.model.cuisine.CuisineResponse;
 public interface RecipeCuisineApiService {
     @GET("cuisines")
     Call<CuisineResponse> getRecipeCuisine(@Query("rapidapi-key") String key);
+
 }

@@ -1,49 +1,35 @@
 package vn.edu.tdc.doan_d2;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
-
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 
 import com.google.android.material.navigation.NavigationView;
 
-import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.fragment.CategoryFragment;
 import vn.edu.tdc.doan_d2.fragment.PaginationInterface;
-import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
 import vn.edu.tdc.doan_d2.view.MyAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
@@ -71,12 +57,7 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         viewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
         setupToolbar();
-//         Khởi tạo ViewModel
-
-        if (!isRetrofitRunToday()) {
-            runRetrofit();
-            updateRetrofitRunFlag();
-        }
+        runRetrofit();
         swipeRefreshLayout = binding.swipeLayout;
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -126,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
                 if (itemId == R.id.id_category) {
                     viewModel.setIsCategory(true);
                     fragment.setCurrentPage(0);
-                } else if (itemId == R.id.id_cuisine){
+                } else if (itemId == R.id.id_cuisine) {
                     viewModel.setIsCategory(false);
                     fragment.setCurrentPage(0);
                 }
@@ -141,48 +122,17 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
     }
 
     private void loadDataRetrofitToFirebase() {
-
         loadData = new CategoryViewModelRetrofit(getApplication());
         viewModel.getIsCategory().observe(this, isCategory -> {
 
             loadData.getAllCategoryRetrofit(isCategory).observe(this, new Observer<ArrayList<String>>() {
                 @Override
                 public void onChanged(ArrayList<String> strings) {
-
                 }
             });
         });
-
-
     }
 
-    private boolean isRetrofitRunToday() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this); // Sử dụng 'this' nếu đang ở trong Activity
-        String lastRunDate = prefs.getString(PREF_RETROFIT_RUN_FLAG, ""); // Lấy ngày chạy lần cuối
-
-        // Tính ngày hiện tại
-        Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
-        int currentMonth = calendar.get(Calendar.MONTH) + 1; // Tháng bắt đầu từ 0
-        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-
-        // So sánh ngày để xác định xem đã chạy hôm nay chưa
-        return lastRunDate.equals(String.format(Locale.getDefault(), "%04d-%02d-%02d", currentYear, currentMonth, currentDay));
-    }
-
-    private void updateRetrofitRunFlag() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this); // Sử dụng 'this' nếu đang ở trong Activity
-        SharedPreferences.Editor editor = prefs.edit();
-
-        // Lưu ngày hiện tại
-        Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
-        int currentMonth = calendar.get(Calendar.MONTH) + 1; // Tháng bắt đầu từ 0
-        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-        editor.putString(PREF_RETROFIT_RUN_FLAG, String.format(Locale.getDefault(), "%04d-%02d-%02d", currentYear, currentMonth, currentDay));
-
-        editor.apply();
-    }
 
     private void runRetrofit() {
         loadDataRetrofitToFirebase();

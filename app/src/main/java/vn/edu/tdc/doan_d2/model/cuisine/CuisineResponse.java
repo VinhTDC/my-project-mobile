@@ -3,7 +3,6 @@ package vn.edu.tdc.doan_d2.model.cuisine;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import vn.edu.tdc.doan_d2.model.category.Categories;
 
 public class CuisineResponse {
     @SerializedName("cuisines")
