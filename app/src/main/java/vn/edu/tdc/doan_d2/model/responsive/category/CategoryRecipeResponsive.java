@@ -26,7 +26,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     private CategoryViewModel viewModel;
 
     private ArrayList<BaseCategory> categories;
-    private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
     private boolean isCategory ;
     private boolean isDataLoaded = false;
 
@@ -40,12 +40,9 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     public MutableLiveData<ArrayList<BaseCategory>> getAllCategories(boolean isCategory) {
         if (categories == null) {
             loadCategoriesFromFirebase(isCategory);
-            Log.d("getAllCategories", "call");
         } else if (categories != null && !isDataLoaded) {
-            Log.d("getAllCategories", categories.size()+"");
             isDataLoaded = true;
             categoriesLiveData.postValue(categories);
-            isLoading.setValue(false);
         }
         return categoriesLiveData;
     }
@@ -55,6 +52,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
         if (categories == null) {
             categories = new ArrayList<>();
         }
+
         getCategoriesFromFirebase(isCategory).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -85,13 +83,11 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
                     Log.d("Firebase", "Data snapshot is empty");
                 }
                 categoriesLiveData.postValue(categories);
-                isLoading.setValue(false);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 categoriesLiveData.setValue(null);
-                isLoading.setValue(false);
             }
         });
     }
@@ -108,7 +104,6 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
         categories = null;
         isDataLoaded = false;
     }
-
 
 }
 //    public ArrayList<Category> getCategoriesByRange(int startIndex, int endIndex) {

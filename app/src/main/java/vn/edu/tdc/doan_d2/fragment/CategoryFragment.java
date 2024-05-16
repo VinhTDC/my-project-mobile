@@ -116,8 +116,8 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
             this.categoriesCount = total;
         });
         loadCategoriesForSearch();
-        viewModelCategory.getIsCategory().observe(getViewLifecycleOwner(),isCategory -> {
-          loadCategoriesForPage(currentPage);
+        viewModelCategory.getIsCategory().observe(getViewLifecycleOwner(), isCategory -> {
+            loadCategoriesForPage(currentPage);
         });
     }
 
@@ -155,37 +155,42 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
         binding.recyclerview.setAdapter(adapter);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void goToPreviousPage() {
-        if (viewModelCategory != null) {
-            int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
-            Log.d("total", totalPage + "");
-            if (currentPage > 0) {
-                currentPage--;
-                loadCategoriesForPage(currentPage);
+        if (adapter != null) {
+            if (viewModelCategory != null) {
+                int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
+                Log.d("total", totalPage + "");
+                if (currentPage > 0) {
+                    currentPage--;
+                    loadCategoriesForPage(currentPage);
+                    adapter.notifyDataSetChanged();
 
-            } else {
-                currentPage = totalPage - 1;
-                loadCategoriesForPage(currentPage);
+                } else {
+                    currentPage = totalPage - 1;
+                    loadCategoriesForPage(currentPage);
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void goToNextPage() {
         int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
-
-        if (viewModelCategory != null) { // Kiểm tra null
-            if (currentPage < totalPage - 1) {
-                currentPage++;
-                loadCategoriesForPage(currentPage);
-                adapter.notifyDataSetChanged();
-            } else {
-                currentPage = 0;
-                loadCategoriesForPage(currentPage);
-                adapter.notifyDataSetChanged();
+        if (adapter != null) {
+            if (viewModelCategory != null) { // Kiểm tra null
+                if (currentPage < totalPage - 1) {
+                    currentPage++;
+                    loadCategoriesForPage(currentPage);
+                    adapter.notifyDataSetChanged();
+                } else {
+                    currentPage = 0;
+                    loadCategoriesForPage(currentPage);
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
 
@@ -249,35 +254,41 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
     }
 
     public void loadCategoriesForPage(int page) {
+        viewModelCategory.loadCategoriesForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseCategory>>() {
 
-            viewModelCategory.loadCategoriesForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseCategory>>() {
-
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onChanged(ArrayList<BaseCategory> categories) {
-                    // Cập nhật Adapter]
-                    if (categories != null) {
-                        if (adapter == null) {
-                            adapter = new MyAdapter(requireContext(), categories);
-                            binding.recyclerview.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), categories));
-                            adapter.setData(categories);
-                            diffResult.dispatchUpdatesTo(adapter);
-                            adapter.notifyDataSetChanged();
-                        }
-
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onChanged(ArrayList<BaseCategory> categories) {
+                // Cập nhật Adapter]
+                if (categories != null) {
+                    if (adapter == null) {
+                        adapter = new MyAdapter(requireContext(), categories);
+                        binding.recyclerview.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } else {
-                        // Handle loading error (e.g., show error message)
-                        Log.e("CategoryFragment", "Failed to load categories for page " + page);
-
+                        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), categories));
+                        adapter.setData(categories);
+                        diffResult.dispatchUpdatesTo(adapter);
+                        adapter.notifyDataSetChanged();
                     }
-                    binding.recyclerview.scrollToPosition(0);
-                    isLoading = false; // Finish loading
+
+                } else {
+                    // Handle loading error (e.g., show error message)
+                    Log.e("CategoryFragment", "Failed to load categories for page " + page);
+
                 }
-            });
+                binding.recyclerview.scrollToPosition(0);
+                isLoading = false; // Finish loading
+            }
+        });
 
     }
+    //reset Currentpage
 
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+        Log.d("123213131", "call");
+
+    }
 }

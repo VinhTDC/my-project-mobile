@@ -37,19 +37,30 @@ import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private Context context;
     private ArrayList<BaseCategory> data;
-
-
+    private LayoutInflater inflater;
 
     public MyAdapter(Context context, ArrayList<BaseCategory> data) {
 
         this.context = context;
         this.data = data;
+        this.inflater = LayoutInflater.from(context);
         setHasStableIds(false);
     }
     @Override
     public long getItemId(int position) {
         BaseCategory item = data.get(position);
         return item.getId().hashCode(); // Giả sử BaseCategory có thuộc tính id
+    }
+    @Override
+    public int getItemViewType(int position) {
+        BaseCategory item = data.get(position);
+        if (item instanceof Category) {
+            return 1; // Category
+        } else if (item instanceof Cuisine) {
+            return 2; // Cuisine
+        } else {
+            return 0; // Mặc định hoặc loại không xác định
+        }
     }
 
     @NonNull
@@ -110,119 +121,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
         private void bindCategory(Category category) {
             String imageUrl = category.getImgUrl();
-
             // Kiểm tra xem imageUrl không null và không rỗng
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-
-                Glide.with(categoryListItemBinding.imageCategory.getContext())
-                        .asGif() // Thiết lập tải dưới dạng GIF
-                        .load(R.drawable.loadding1) // Đặt tên file loading.gif
-                        .into(categoryListItemBinding.imageCategory);
-                // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference().child(imageUrl);
-
-                // Kiểm tra xem tệp tồn tại trong Firebase Storage
-                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Glide.with(categoryListItemBinding.imageCategory.getContext())
-                                .load(uri)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .into(categoryListItemBinding.imageCategory);
-                        Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        if (exception instanceof StorageException) {
-                            StorageException storageException = (StorageException) exception;
-                            int errorCode = storageException.getErrorCode();
-                            String errorMessage = storageException.getMessage();
-
-                            // Xử lý dựa trên mã lỗi và thông điệp
-                            switch (errorCode) {
-                                case StorageException.ERROR_OBJECT_NOT_FOUND:
-                                    // Tệp không tồn tại, xử lý tương ứng
-                                    Log.e("FirebaseStorage1", "File does not exist: " + errorMessage);
-                                    break;
-                                default:
-                                    // Xử lý mặc định hoặc thông báo lỗi
-                                    break;
-                            }
-                        } else {
-
-                            // Xử lý các loại ngoại lệ khác
-                            Log.e("FirebaseStorage2", "Error: " + exception.getMessage());
-                        }
-                        Log.e("FirebaseStorage3", "File does not exist: " + exception.getMessage());
-                    }
-                });
-            } else {
-                // Xử lý trường hợp imageUrl là null hoặc rỗng
-
-            }
-
+            loadImageFromFirebase(imageUrl);
             // Đặt tên danh mục
             categoryListItemBinding.nameCategory.setText(category.getName());
         }
         private void bindCuisine(Cuisine cuisine) {
             String imageUrl = cuisine.getImgUrl();
-
             // Kiểm tra xem imageUrl không null và không rỗng
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-
-                Glide.with(categoryListItemBinding.imageCategory.getContext())
-                        .asGif() // Thiết lập tải dưới dạng GIF
-                        .load(R.drawable.loadding1) // Đặt tên file loading.gif
-                        .into(categoryListItemBinding.imageCategory);
-                // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference().child(imageUrl);
-
-                // Kiểm tra xem tệp tồn tại trong Firebase Storage
-                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Glide.with(categoryListItemBinding.imageCategory.getContext())
-                                .load(uri)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .into(categoryListItemBinding.imageCategory);
-                        Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        if (exception instanceof StorageException) {
-                            StorageException storageException = (StorageException) exception;
-                            int errorCode = storageException.getErrorCode();
-                            String errorMessage = storageException.getMessage();
-
-                            // Xử lý dựa trên mã lỗi và thông điệp
-                            switch (errorCode) {
-                                case StorageException.ERROR_OBJECT_NOT_FOUND:
-                                    // Tệp không tồn tại, xử lý tương ứng
-                                    Log.e("FirebaseStorage1", "File does not exist: " + errorMessage);
-                                    break;
-                                default:
-                                    // Xử lý mặc định hoặc thông báo lỗi
-                                    break;
-                            }
-                        } else {
-
-                            // Xử lý các loại ngoại lệ khác
-                            Log.e("FirebaseStorage2", "Error: " + exception.getMessage());
-                        }
-                        Log.e("FirebaseStorage3", "File does not exist: " + exception.getMessage());
-                    }
-                });
-            } else {
-                // Xử lý trường hợp imageUrl là null hoặc rỗng
-
-            }
-
+            loadImageFromFirebase(imageUrl);
             // Đặt tên danh mục
             categoryListItemBinding.nameCategory.setText(cuisine.getName());
         }
@@ -231,6 +138,68 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 bindCategory((Category) baseCategory);
             } else if (baseCategory instanceof Cuisine) {
                 bindCuisine((Cuisine) baseCategory);
+            }
+        }
+        private void loadImageFromFirebase(String imageUrl) {
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+
+                Glide.with(categoryListItemBinding.imageCategory.getContext())
+                        .asGif() // Thiết lập tải dưới dạng GIF
+                        .load(R.drawable.loadding1) // Đặt tên file loading.gif
+                        .into(categoryListItemBinding.imageCategory);
+                // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReference().child(imageUrl);
+
+                // Kiểm tra xem tệp tồn tại trong Firebase Storage
+                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Glide.with(categoryListItemBinding.imageCategory.getContext())
+                                .load(uri)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .into(categoryListItemBinding.imageCategory);
+                        Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        if (exception instanceof StorageException) {
+                            StorageException storageException = (StorageException) exception;
+                            int errorCode = storageException.getErrorCode();
+                            String errorMessage = storageException.getMessage();
+
+                            Glide.with(categoryListItemBinding.imageCategory.getContext())
+                                    .load(R.drawable.img)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
+                                    .into(categoryListItemBinding.imageCategory);
+                            Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
+                            // Xử lý dựa trên mã lỗi và thông điệp
+                            switch (errorCode) {
+                                case StorageException.ERROR_OBJECT_NOT_FOUND:
+                                    // Tệp không tồn tại, xử lý tương ứng
+                                    Log.e("FirebaseStorage1", "File does not exist: " + errorMessage);
+                                    break;
+                                default:
+                                    // Xử lý mặc định hoặc thông báo lỗi
+                                    break;
+                            }
+                        } else {
+
+                            // Xử lý các loại ngoại lệ khác
+                            Log.e("FirebaseStorage2", "Error: " + exception.getMessage());
+                        }
+                    }
+                });
+            } else {
+                Glide.with(categoryListItemBinding.imageCategory.getContext())
+                        .load(R.drawable.img)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(categoryListItemBinding.imageCategory);
+                Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
             }
         }
 
