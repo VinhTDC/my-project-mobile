@@ -18,9 +18,6 @@ public class CategoryDiffCallback extends DiffUtil.Callback{
         this.oldCategories = oldCategories;
         this.newCategories = newCategories;
     }
-    public CategoryDiffCallback() {
-
-    }
     @Override
     public int getOldListSize() {
         return oldCategories.size();

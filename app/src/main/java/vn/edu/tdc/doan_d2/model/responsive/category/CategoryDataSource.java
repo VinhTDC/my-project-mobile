@@ -13,5 +13,5 @@ public interface CategoryDataSource {
 
    void loadCategoriesFromFirebase(boolean isCategory);
 
-    DatabaseReference getCategoriesFromFirebase(boolean isCategory);
+    DatabaseReference getCategoriesFromFirebase();
 }

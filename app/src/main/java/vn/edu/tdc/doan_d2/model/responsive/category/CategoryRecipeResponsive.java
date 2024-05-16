@@ -1,6 +1,8 @@
 package vn.edu.tdc.doan_d2.model.responsive.category;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -30,7 +32,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     private boolean isCategory ;
     private boolean isDataLoaded = false;
 
-
+    private static final String PREF_RETROFIT_RUN_COUNT = "retrofit_run_count";
     public CategoryRecipeResponsive(Application application, CategoryViewModel viewModel) {
         this.application = application;
         this.viewModel = viewModel;
@@ -52,8 +54,11 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
         if (categories == null) {
             categories = new ArrayList<>();
         }
+        DatabaseReference categoryRef = getCategoriesFromFirebase();
 
-        getCategoriesFromFirebase(isCategory).addValueEventListener(new ValueEventListener() {
+        // Reference đến node con cụ thể dựa trên isCategory
+        DatabaseReference dataRef = isCategory ? categoryRef.child("categories") : categoryRef.child("cuisines");
+        dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -93,17 +98,38 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     }
 
     @Override
-    public DatabaseReference getCategoriesFromFirebase(boolean isCategory) {
-        if (isCategory) {
-            return FirebaseDatabase.getInstance().getReference("categories");
-        } else {
-            return FirebaseDatabase.getInstance().getReference("cuisines");
-        }
+    public DatabaseReference getCategoriesFromFirebase() {
+//        if (isCategory) {
+//            return FirebaseDatabase.getInstance().getReference("categories");
+//        } else {
+//            return FirebaseDatabase.getInstance().getReference("cuisines");
+//        }
+        return FirebaseDatabase.getInstance().getReference("Category");
     }
     public void resetCategories(){
         categories = null;
         isDataLoaded = false;
     }
+    private int getRetrofitRunCount() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        return prefs.getInt(PREF_RETROFIT_RUN_COUNT, 0); // Lấy số lần chạy, mặc định là 0
+    }
+
+    private void incrementRetrofitRunCount() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        int runCount = prefs.getInt(PREF_RETROFIT_RUN_COUNT, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(PREF_RETROFIT_RUN_COUNT, runCount + 1);
+        editor.apply();
+    }
+
+    private void resetRetrofitRunCount() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(PREF_RETROFIT_RUN_COUNT, 0);
+        editor.apply();
+    }
+
 
 }
 //    public ArrayList<Category> getCategoriesByRange(int startIndex, int endIndex) {

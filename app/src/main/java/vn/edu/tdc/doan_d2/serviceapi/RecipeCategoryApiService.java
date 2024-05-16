@@ -8,4 +8,5 @@ import vn.edu.tdc.doan_d2.model.category.CategoryResponse;
 public interface RecipeCategoryApiService {
     @GET("categories")
     Call<CategoryResponse> getRecipeCategory(@Query("rapidapi-key") String key);
+
 }

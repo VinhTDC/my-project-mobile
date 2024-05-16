@@ -7,6 +7,7 @@
 
     import com.google.firebase.database.DataSnapshot;
     import com.google.firebase.database.DatabaseError;
+    import com.google.firebase.database.DatabaseReference;
     import com.google.firebase.database.Query;
     import com.google.firebase.database.ValueEventListener;
 
@@ -29,7 +30,9 @@
             MutableLiveData<ArrayList<BaseCategory>> filteredLiveData = new MutableLiveData<>();
             isLoading.setValue(true); // Bắt đầu quá trình tải
             if (!query.isEmpty()) {
-                Query queryRef = responsive.getCategoriesFromFirebase(isCategory).orderByChild("name")
+                DatabaseReference reference = responsive.getCategoriesFromFirebase();
+                reference = isCategory ? reference.child("categories") : reference.child("cuisine");
+                Query queryRef = reference.orderByChild("name")
                         .startAt(query.trim().toLowerCase())
                         .endAt(query.trim().toLowerCase() + "\uf8ff"); //
                 queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
