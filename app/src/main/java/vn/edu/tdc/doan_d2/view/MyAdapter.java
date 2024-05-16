@@ -148,7 +148,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         .load(R.drawable.loadding1) // Đặt tên file loading.gif
                         .into(categoryListItemBinding.imageCategory);
                 // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
-                FirebaseStorage storage = FirebaseStorage.getInstance("");
+                FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference().child("categories/"+imageUrl);
 
                 // Kiểm tra xem tệp tồn tại trong Firebase Storage
