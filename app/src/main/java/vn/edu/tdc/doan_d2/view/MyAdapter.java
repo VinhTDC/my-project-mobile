@@ -35,8 +35,10 @@ import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+
     private Context context;
     private ArrayList<BaseCategory> data;
+
     private LayoutInflater inflater;
 
     public MyAdapter(Context context, ArrayList<BaseCategory> data) {
@@ -107,7 +109,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private final FragmentCategoryItemBinding categoryListItemBinding;
-
+        private  OnItemClickListener onItemClickListener;
         public MyViewHolder(FragmentCategoryItemBinding categoryListItemBinding) {
             super(categoryListItemBinding.getRoot());
 
@@ -115,9 +117,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             categoryListItemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("testClick", "Called");
+                    int position = getAbsoluteAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && onItemClickListener != null) {
+
+                    }
                 }
             });
+        }
+        public interface OnItemClickListener {
+            void onItemClick(BaseCategory category);
         }
         private void bindCategory(Category category) {
             String imageUrl = category.getImgUrl();

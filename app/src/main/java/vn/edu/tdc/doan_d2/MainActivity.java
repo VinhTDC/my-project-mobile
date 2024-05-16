@@ -30,6 +30,7 @@ import java.util.Locale;
 import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.fragment.CategoryFragment;
 import vn.edu.tdc.doan_d2.fragment.PaginationInterface;
+import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.view.MyAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-
+        loadDataMealRetrofitToFirebase();
         binding.buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,6 +132,15 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
                 }
             });
         });
+    }
+    private void loadDataMealRetrofitToFirebase() {
+        loadData = new CategoryViewModelRetrofit(getApplication());
+            loadData.getAllMealRetrofit("austrian").observe(this, new Observer<ArrayList<Meal>>() {
+                @Override
+                public void onChanged(ArrayList<Meal> meals) {
+                }
+            });
+
     }
 
 

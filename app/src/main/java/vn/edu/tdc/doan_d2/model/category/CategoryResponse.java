@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisines;
+import vn.edu.tdc.doan_d2.model.meal.Meal;
+import vn.edu.tdc.doan_d2.model.meal.Meals;
 
 public class CategoryResponse {
     @SerializedName("categories")

@@ -3,6 +3,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="api_key">bb3ff6e053msh0904942b711621ap1dabb1jsnb953455d7053</string>
+    <string name="api_key1">234e242796msheb2c5edb0c390e6p12b4bfjsna248e248f56d</string>
+
+
     <string name="nameTittle">Categories</string>
     <string name="btnNext">Next</string>
     <string name="btnPre">Previous</string>
