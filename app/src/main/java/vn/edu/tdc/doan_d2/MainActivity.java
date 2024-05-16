@@ -125,8 +125,10 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
                 int itemId = menuItem.getItemId();
                 if (itemId == R.id.id_category) {
                     viewModel.setIsCategory(true);
+                    fragment.setCurrentPage(0);
                 } else if (itemId == R.id.id_cuisine){
                     viewModel.setIsCategory(false);
+                    fragment.setCurrentPage(0);
                 }
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;

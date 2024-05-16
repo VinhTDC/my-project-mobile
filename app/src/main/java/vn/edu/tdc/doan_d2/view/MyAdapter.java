@@ -170,6 +170,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                             int errorCode = storageException.getErrorCode();
                             String errorMessage = storageException.getMessage();
 
+                            Glide.with(categoryListItemBinding.imageCategory.getContext())
+                                    .load(R.drawable.img)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
+                                    .into(categoryListItemBinding.imageCategory);
+                            Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
                             // Xử lý dựa trên mã lỗi và thông điệp
                             switch (errorCode) {
                                 case StorageException.ERROR_OBJECT_NOT_FOUND:
@@ -185,12 +191,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                             // Xử lý các loại ngoại lệ khác
                             Log.e("FirebaseStorage2", "Error: " + exception.getMessage());
                         }
-                        Log.e("FirebaseStorage3", "File does not exist: " + exception.getMessage());
                     }
                 });
             } else {
-                // Xử lý trường hợp imageUrl là null hoặc rỗng
-
+                Glide.with(categoryListItemBinding.imageCategory.getContext())
+                        .load(R.drawable.img)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(categoryListItemBinding.imageCategory);
+                Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
             }
         }
 
