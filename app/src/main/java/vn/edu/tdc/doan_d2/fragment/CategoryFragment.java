@@ -2,7 +2,6 @@ package vn.edu.tdc.doan_d2.fragment;
 
 import android.annotation.SuppressLint;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -27,14 +26,13 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
-import vn.edu.tdc.doan_d2.model.meal.BaseMeal;
 import vn.edu.tdc.doan_d2.model.responsive.category.CategoryFilter;
-import vn.edu.tdc.doan_d2.model.responsive.category.CategoryRecipeResponsive;
 import vn.edu.tdc.doan_d2.view.MyAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
@@ -125,7 +123,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
         });
     }
 
-    private void updateCategoriesInAdapter(ArrayList<BaseCategory> newCategories) {
+    private void updateCategoriesInAdapter(List<?> newCategories) {
         if (!binding.recyclerview.isComputingLayout()) {
             isUpdatingAdapter = true;
             if (newCategories != null) {// Bắt đầu cập nhật Adapter
@@ -134,11 +132,11 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
                     @Override
                     public void run() {
                         if (adapter == null) {
-                            adapter = new MyAdapter(requireContext(), newCategories,CategoryFragment.this);
+                            adapter = new MyAdapter(requireContext(), (ArrayList<?>) newCategories,CategoryFragment.this);
                             binding.recyclerview.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
                         } else {
-                            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), newCategories));
+                            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback((ArrayList<BaseCategory>) adapter.getData(), (ArrayList<BaseCategory>) newCategories));
                             adapter.setData(newCategories);
                             diffResult.dispatchUpdatesTo(adapter);
                             adapter.notifyDataSetChanged();
@@ -152,7 +150,33 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
             Log.d("RecyclerView111111111", "Đang trong quá trình tính toán layout, không thực hiện cập nhật ngay lúc này");
         }
     }
-
+    private void updateMealInAdapter(List<BaseMeal> newMeals) {
+        if (!binding.recyclerview.isComputingLayout()) {
+            isUpdatingAdapter = true;
+            if (newMeals != null) {// Bắt đầu cập nhật Adapter
+                getActivity().runOnUiThread(new Runnable() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void run() {
+                        if (adapter == null) {
+                            adapter = new MyAdapter(requireContext(), (ArrayList<?>) newMeals,CategoryFragment.this);
+                            binding.recyclerview.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MealDiffCallback((List<BaseMeal>) adapter.getData(), newMeals));
+                            adapter.setData(newMeals);
+                            diffResult.dispatchUpdatesTo(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+            isUpdatingAdapter = false; // Kết thúc cập nhật Adapter
+        } else {
+            // RecyclerView đang trong quá trình tính toán layout, không thực hiện cập nhật ngay lúc này
+            Log.d("RecyclerView111111111", "Đang trong quá trình tính toán layout, không thực hiện cập nhật ngay lúc này");
+        }
+    }
     private void setupRecyclerView() {
         binding.recyclerview.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         binding.recyclerview.setItemAnimator(new DefaultItemAnimator());
@@ -270,8 +294,38 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
                         binding.recyclerview.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
                     } else {
-                        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), categories));
+                        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback((ArrayList<BaseCategory>) adapter.getData(), categories));
                         adapter.setData(categories);
+                        diffResult.dispatchUpdatesTo(adapter);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                } else {
+                    // Handle loading error (e.g., show error message)
+                    Log.e("CategoryFragment", "Failed to load categories for page " + page);
+                }
+                binding.recyclerview.scrollToPosition(0);
+                isLoading = false; // Finish loading
+            }
+        });
+
+    }
+    public void loadMealsForPage(int page) {
+
+        viewModelCategory.loadMealForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseMeal>>() {
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onChanged(ArrayList<BaseMeal> meals) {
+                // Cập nhật Adapter]
+                if (meals != null) {
+                    if (adapter == null) {
+                        adapter = new MyAdapter(requireContext(), meals,CategoryFragment.this);
+                        binding.recyclerview.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MealDiffCallback((List<BaseMeal>) adapter.getData(), meals));
+                        adapter.setData(meals);
                         diffResult.dispatchUpdatesTo(adapter);
                         adapter.notifyDataSetChanged();
                     }
@@ -297,8 +351,10 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
     }
 
     @Override
-    public void onCategoryClick(BaseCategory category) {
-        categoryViewModelRetrofit.getAllMealRetrofit(category.getName());
-        Log.d("Logzxczxcxzc",category.getName()+"");
+    public void onCategoryClick(BaseCategory meal) {
+        viewModelCategory.setNameCategory(meal.getName());
+        loadMealsForPage(currentPage);
+        categoryViewModelRetrofit.getAllMealRetrofit(meal.getName());
+
     }
 }

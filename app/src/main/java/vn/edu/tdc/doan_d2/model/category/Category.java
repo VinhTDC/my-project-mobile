@@ -5,7 +5,7 @@ import java.util.Objects;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 
 public class Category implements BaseCategory {
-    private String id;
+    private Integer id;
     private String name;
     private String imgUrl;
 
@@ -18,8 +18,13 @@ public class Category implements BaseCategory {
     }
 
 
-    public Category(String id, String name, String imgUrl) {
+    public Category(Integer id, String name, String imgUrl) {
         this.id = id;
+        this.name = name;
+        this.imgUrl = imgUrl;
+    }
+    public Category( String name, String imgUrl) {
+
         this.name = name;
         this.imgUrl = imgUrl;
     }
@@ -36,12 +41,15 @@ public class Category implements BaseCategory {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public Integer getId() {
+        return null;
     }
 
-    public void setId(String id) {
-        this.id = id;
+
+    @Override
+    public void setId(Integer id) {
+
     }
 
     @Override

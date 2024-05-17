@@ -11,21 +11,22 @@ import java.util.List;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 
 public class CategoryDiffCallback extends DiffUtil.Callback{
-    private  ArrayList<BaseCategory> oldCategories;
-    private  ArrayList<BaseCategory> newCategories;
+    private final List<BaseCategory> oldCategories;
+    private final List<BaseCategory> newCategories;
 
-    public CategoryDiffCallback(ArrayList<BaseCategory> oldCategories, ArrayList<BaseCategory> newCategories) {
+    public CategoryDiffCallback(List<BaseCategory> oldCategories, List<BaseCategory> newCategories) {
         this.oldCategories = oldCategories;
         this.newCategories = newCategories;
     }
+
     @Override
     public int getOldListSize() {
-        return oldCategories.size();
+        return oldCategories.size(); // No need for null check, an empty list has size 0
     }
 
     @Override
     public int getNewListSize() {
-        return newCategories.size();
+        return newCategories.size(); // Same as above
     }
 
     @Override
@@ -33,16 +34,18 @@ public class CategoryDiffCallback extends DiffUtil.Callback{
         BaseCategory oldItem = oldCategories.get(oldItemPosition);
         BaseCategory newItem = newCategories.get(newItemPosition);
 
-        // Kiểm tra xem 2 item có cùng ID không
-        return oldItem.getName().equals(newItem.getName());
+        // Use a unique identifier for comparison (e.g., an ID or a combination of fields)
+        // In your case, you were using name. Be sure it's unique. If not, use IDs for reliability
+        return oldItem.getId().equals(newItem.getId()); // Assuming you have an ID field in BaseCategory
     }
 
+    @SuppressLint("DiffUtilEquals") // Suppress warning about direct object comparison
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
         BaseCategory oldItem = oldCategories.get(oldItemPosition);
         BaseCategory newItem = newCategories.get(newItemPosition);
-        // So sánh các thuộc tính của BaseCategory
-        // Chú ý: Bạn cần đảm bảo rằng các lớp Category và Cuisine đều override phương thức equals()
-        return oldItem.equals(newItem);
+
+        // Check if all the relevant content fields have the same values
+        return oldItem.equals(newItem); // This relies on your BaseCategory's equals() implementation
     }
 }

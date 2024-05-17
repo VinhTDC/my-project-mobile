@@ -12,7 +12,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,7 +24,6 @@ import vn.edu.tdc.doan_d2.model.category.CategoryResponse;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 import vn.edu.tdc.doan_d2.model.cuisine.CuisineResponse;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisines;
-import vn.edu.tdc.doan_d2.model.meal.BaseMeal;
 import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.model.meal.MealResponse;
 import vn.edu.tdc.doan_d2.model.meal.Meals;
@@ -88,7 +86,6 @@ public class RecipeResponsiveRetrofit {
                             Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                         }
                     }
-
                     @Override
                     public void onFailure(Call<CategoryResponse> call, Throwable t) {
 
@@ -96,7 +93,7 @@ public class RecipeResponsiveRetrofit {
                 });
             } else {
                 RecipeCuisineApiService recipeCuisineApiService = RetrofitInstance.getServiceCuisine();
-                Call<CuisineResponse> call = recipeCuisineApiService.getRecipeCuisine(application.getApplicationContext().getString(R.string.api_key));
+                Call<CuisineResponse> call = recipeCuisineApiService.getRecipeCuisine(application.getApplicationContext().getString(R.string.api_key1));
                 call.enqueue(new Callback<CuisineResponse>() {
                     @Override
                     public void onResponse(Call<CuisineResponse> call, Response<CuisineResponse> response) {
@@ -125,12 +122,9 @@ public class RecipeResponsiveRetrofit {
                             Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                         }
                     }
-
                     @Override
                     public void onFailure(Call<CuisineResponse> call, Throwable t) {
-
                     }
-
                 });
             }
         }
@@ -165,10 +159,8 @@ public class RecipeResponsiveRetrofit {
                         Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                     }
                 }
-
                 @Override
                 public void onFailure(Call<MealResponse> call, Throwable t) {
-
                 }
             });
 
@@ -201,7 +193,7 @@ public class RecipeResponsiveRetrofit {
 
     }
 
-    private void saveMealToFirebase(BaseMeal meal,String nameCategory) {
+    private void saveMealToFirebase(BaseCategory meal,String nameCategory) {
         DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories/"+nameCategory);
         // Tạo key tự động cho mỗi category
         if (meal.getId() != null ) {
