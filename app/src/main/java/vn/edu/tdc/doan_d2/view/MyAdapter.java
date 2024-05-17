@@ -36,22 +36,20 @@ import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
 
 
-
-
-
 interface DataProvider {
     BaseCategory getItem(int position);
 }
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements DataProvider {
 
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements DataProvider {
 
     private Context context;
     private ArrayList<BaseCategory> data;
+
     private LayoutInflater inflater;
 
     private OnCategoryClickListener onCategoryClickListener;
 
-    public MyAdapter(Context context, ArrayList<BaseCategory> data,OnCategoryClickListener listener) {
+    public MyAdapter(Context context, ArrayList<BaseCategory> data, OnCategoryClickListener listener) {
         this.context = context;
         this.data = data;
         this.onCategoryClickListener = listener;
@@ -82,7 +80,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FragmentCategoryItemBinding binding = DataBindingUtil
                 .inflate(LayoutInflater.from(parent.getContext()), R.layout.fragment_category_item, parent, false);
-        return new MyViewHolder(binding,onCategoryClickListener,this);
+        return new MyViewHolder(binding, onCategoryClickListener, this);
     }
 
     @Override
@@ -128,32 +126,30 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private final FragmentCategoryItemBinding categoryListItemBinding;
-
         private final DataProvider dataProvider;
         private final OnCategoryClickListener listener;
-        public MyViewHolder(FragmentCategoryItemBinding categoryListItemBinding,OnCategoryClickListener listener,DataProvider dataProvider) {
+
+        public MyViewHolder(FragmentCategoryItemBinding categoryListItemBinding, OnCategoryClickListener listener, DataProvider dataProvider) {
             super(categoryListItemBinding.getRoot());
             this.dataProvider = dataProvider;
             this.listener = listener;
             this.categoryListItemBinding = categoryListItemBinding;
 
-            categoryListItemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("testClick", "Called");
-                }
-            });
-        }
 
             categoryListItemBinding.getRoot().setOnClickListener(v -> {
-                int position =  getAbsoluteAdapterPosition();
+                int position = getAbsoluteAdapterPosition();
                 BaseCategory item = dataProvider.getItem(position);
-
-                if(position != RecyclerView.NO_POSITION && listener != null && item != null){
+                if (position != RecyclerView.NO_POSITION && listener != null && item != null) {
                     listener.onCategoryClick(item);
                 }
             });
         }
+
+
+        public interface OnItemClickListener {
+            void onItemClick(BaseCategory category);
+        }
+
 
         private void bindCategory(Category category) {
             String imageUrl = category.getImgUrl();
@@ -241,15 +237,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
                 Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
             }
         }
+    }
+        public void setData(ArrayList<BaseCategory> newData) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(getData(), newData));
+            data.clear();
+            data.addAll(newData);
+            diffResult.dispatchUpdatesTo(this);
+        }
 
-    public void setData(ArrayList<BaseCategory> newData) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(getData(), newData));
-        data.clear();
-        data.addAll(newData);
-        diffResult.dispatchUpdatesTo(this);
+        public ArrayList<BaseCategory> getData() {
+            return data;
+        }
     }
 
-    public ArrayList<BaseCategory> getData() {
-        return data;
-    }
-}

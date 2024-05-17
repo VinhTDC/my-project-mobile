@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
+import vn.edu.tdc.doan_d2.model.meal.BaseMeal;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 
 
@@ -28,6 +29,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     private CategoryViewModel viewModel;
 
     private ArrayList<BaseCategory> categories;
+    private ArrayList<BaseMeal> meals;
 
     private boolean isCategory ;
     private boolean isDataLoaded = false;
@@ -96,15 +98,61 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
             }
         });
     }
+    @Override
+    public void loadMealFromFirebase() {
+        if (meals == null) {
+            meals = new ArrayList<>();
+        }
+        DatabaseReference mealRef = getMealsFromFirebase();
+
+        // Reference đến node con cụ thể dựa trên isCategory
+        DatabaseReference dataRef =  mealRef.child("categories");
+        dataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    categories.clear();
+                    for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
+                        String id = "";
+                        if (categorySnapshot.child("id").exists()) {
+                            id = categorySnapshot.child("id").getValue(String.class);
+                        }
+                        String name = "";
+                        if (categorySnapshot.child("name").exists()) {
+                            name = categorySnapshot.child("name").getValue(String.class);
+                        }
+                        String imageUrl = "";
+                        if (categorySnapshot.child("imgUrl").exists()) {
+                            imageUrl = categorySnapshot.child("imgUrl").getValue(String.class);
+                        }
+                        BaseCategory category;
+                        if (isCategory) {
+                            category = new Category(id, name, imageUrl);
+                        } else {
+                            category = new Cuisine(id, name, imageUrl);
+                        }
+                        categories.add(category);
+                    }
+                } else {
+                    Log.d("Firebase", "Data snapshot is empty");
+                }
+                categoriesLiveData.postValue(categories);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                categoriesLiveData.setValue(null);
+            }
+        });
+    }
 
     @Override
     public DatabaseReference getCategoriesFromFirebase() {
-//        if (isCategory) {
-//            return FirebaseDatabase.getInstance().getReference("categories");
-//        } else {
-//            return FirebaseDatabase.getInstance().getReference("cuisines");
-//        }
         return FirebaseDatabase.getInstance().getReference("Category");
+    }
+    @Override
+    public DatabaseReference getMealsFromFirebase() {
+        return FirebaseDatabase.getInstance().getReference("Categories");
     }
     public void resetCategories(){
         categories = null;
