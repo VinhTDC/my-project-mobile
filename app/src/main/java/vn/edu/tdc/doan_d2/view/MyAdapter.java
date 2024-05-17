@@ -1,7 +1,7 @@
 package vn.edu.tdc.doan_d2.view;
 
 
-
+import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -28,29 +28,43 @@ import java.util.ArrayList;
 import vn.edu.tdc.doan_d2.R;
 
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryItemBinding;
+import vn.edu.tdc.doan_d2.fragment.OnCategoryClickListener;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
+import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
 
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+
+
+
+interface DataProvider {
+    BaseCategory getItem(int position);
+}
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements DataProvider {
+
+
     private Context context;
     private ArrayList<BaseCategory> data;
     private LayoutInflater inflater;
 
-    public MyAdapter(Context context, ArrayList<BaseCategory> data) {
+    private OnCategoryClickListener onCategoryClickListener;
 
+    public MyAdapter(Context context, ArrayList<BaseCategory> data,OnCategoryClickListener listener) {
         this.context = context;
         this.data = data;
+        this.onCategoryClickListener = listener;
         this.inflater = LayoutInflater.from(context);
         setHasStableIds(false);
     }
+
     @Override
     public long getItemId(int position) {
         BaseCategory item = data.get(position);
         return item.getId().hashCode(); // Giả sử BaseCategory có thuộc tính id
     }
+
     @Override
     public int getItemViewType(int position) {
         BaseCategory item = data.get(position);
@@ -68,16 +82,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FragmentCategoryItemBinding binding = DataBindingUtil
                 .inflate(LayoutInflater.from(parent.getContext()), R.layout.fragment_category_item, parent, false);
-        return new MyViewHolder(binding);
+        return new MyViewHolder(binding,onCategoryClickListener,this);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         BaseCategory item = data.get(position);
-        Log.d("dzxczcz",item.getName());
-
         if (data != null && !data.isEmpty() && position >= 0 && position < data.size()) {
-            if(item instanceof  Category) {
+            if (item instanceof Category) {
                 Category baseCategory = (Category) data.get(position);
                 Glide.get(context).clearMemory();
                 if (baseCategory.getName() != null && !baseCategory.getName().isEmpty()) {
@@ -86,7 +98,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     baseCategory.setName(capitalizedName);
                 }
                 holder.bind(baseCategory);
-            }else {
+            } else {
                 Cuisine baseCategory = (Cuisine) data.get(position);
                 Glide.get(context).clearMemory();
                 if (baseCategory.getName() != null && !baseCategory.getName().isEmpty()) {
@@ -104,14 +116,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return data != null ? data.size() : 0;
     }
 
+    @Override
+    public BaseCategory getItem(int position) {
+        if (position >= 0 && position < data.size()) { // Check for valid position
+            return data.get(position);
+        } else {
+            return null; // Or throw an IllegalArgumentException
+        }
+    }
+
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private final FragmentCategoryItemBinding categoryListItemBinding;
 
-        public MyViewHolder(FragmentCategoryItemBinding categoryListItemBinding) {
+        private final DataProvider dataProvider;
+        private final OnCategoryClickListener listener;
+        public MyViewHolder(FragmentCategoryItemBinding categoryListItemBinding,OnCategoryClickListener listener,DataProvider dataProvider) {
             super(categoryListItemBinding.getRoot());
-
+            this.dataProvider = dataProvider;
+            this.listener = listener;
             this.categoryListItemBinding = categoryListItemBinding;
+
             categoryListItemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -119,6 +144,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 }
             });
         }
+
+            categoryListItemBinding.getRoot().setOnClickListener(v -> {
+                int position =  getAbsoluteAdapterPosition();
+                BaseCategory item = dataProvider.getItem(position);
+
+                if(position != RecyclerView.NO_POSITION && listener != null && item != null){
+                    listener.onCategoryClick(item);
+                }
+            });
+        }
+
         private void bindCategory(Category category) {
             String imageUrl = category.getImgUrl();
             // Kiểm tra xem imageUrl không null và không rỗng
@@ -126,6 +162,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             // Đặt tên danh mục
             categoryListItemBinding.nameCategory.setText(category.getName());
         }
+
         private void bindCuisine(Cuisine cuisine) {
             String imageUrl = cuisine.getImgUrl();
             // Kiểm tra xem imageUrl không null và không rỗng
@@ -133,6 +170,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             // Đặt tên danh mục
             categoryListItemBinding.nameCategory.setText(cuisine.getName());
         }
+
         public void bind(BaseCategory baseCategory) {
             if (baseCategory instanceof Category) {
                 bindCategory((Category) baseCategory);
@@ -140,6 +178,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 bindCuisine((Cuisine) baseCategory);
             }
         }
+
         private void loadImageFromFirebase(String imageUrl) {
             if (imageUrl != null && !imageUrl.isEmpty()) {
 
@@ -149,7 +188,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         .into(categoryListItemBinding.imageCategory);
                 // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
                 FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference().child("categories/"+imageUrl);
+                StorageReference storageRef = storage.getReference().child("categories/" + imageUrl);
 
                 // Kiểm tra xem tệp tồn tại trong Firebase Storage
                 storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -203,17 +242,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
         }
 
-    }
-
-
     public void setData(ArrayList<BaseCategory> newData) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(getData(), newData ));
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(getData(), newData));
         data.clear();
         data.addAll(newData);
         diffResult.dispatchUpdatesTo(this);
     }
-    public ArrayList<BaseCategory> getData(){
+
+    public ArrayList<BaseCategory> getData() {
         return data;
     }
-
 }
