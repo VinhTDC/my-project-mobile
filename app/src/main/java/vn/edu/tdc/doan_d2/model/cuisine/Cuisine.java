@@ -15,6 +15,7 @@ public class Cuisine implements BaseCategory {
         this.imgUrl = imgUrlCuisine;
     }
     public Cuisine( String nameCuisine, String imgUrlCuisine) {
+
         this.name = nameCuisine;
         this.imgUrl = imgUrlCuisine;
     }
@@ -23,22 +24,22 @@ public class Cuisine implements BaseCategory {
 
 
     @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public Integer getId() {
-        return null;
-    }
-
-    @Override
-    public void setId(Integer id) {
-
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,6 +25,7 @@ import vn.edu.tdc.doan_d2.model.category.CategoryResponse;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 import vn.edu.tdc.doan_d2.model.cuisine.CuisineResponse;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisines;
+import vn.edu.tdc.doan_d2.model.meal.BaseMeal;
 import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.model.meal.MealResponse;
 import vn.edu.tdc.doan_d2.model.meal.Meals;
@@ -86,6 +88,7 @@ public class RecipeResponsiveRetrofit {
                             Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                         }
                     }
+
                     @Override
                     public void onFailure(Call<CategoryResponse> call, Throwable t) {
 
@@ -93,7 +96,7 @@ public class RecipeResponsiveRetrofit {
                 });
             } else {
                 RecipeCuisineApiService recipeCuisineApiService = RetrofitInstance.getServiceCuisine();
-                Call<CuisineResponse> call = recipeCuisineApiService.getRecipeCuisine(application.getApplicationContext().getString(R.string.api_key1));
+                Call<CuisineResponse> call = recipeCuisineApiService.getRecipeCuisine(application.getApplicationContext().getString(R.string.api_key));
                 call.enqueue(new Callback<CuisineResponse>() {
                     @Override
                     public void onResponse(Call<CuisineResponse> call, Response<CuisineResponse> response) {
@@ -122,9 +125,12 @@ public class RecipeResponsiveRetrofit {
                             Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                         }
                     }
+
                     @Override
                     public void onFailure(Call<CuisineResponse> call, Throwable t) {
+
                     }
+
                 });
             }
         }
@@ -132,37 +138,36 @@ public class RecipeResponsiveRetrofit {
     }
 
 
-
     public MutableLiveData<ArrayList<Meal>> getDataMutableLiveDataRetrofit(String nameCategory) {
         int runCount = getRetrofitRunCount();
 //        if (runCount < 1) { // Kiểm tra số lần chạy
 //            incrementRetrofitRunCount(); // Tăng biến đếm
         MealApiService recipeMealApiService = RetrofitInstance.getServiceMeal();
-        Call<MealResponse> call = recipeMealApiService.getRecipeMeal(nameCategory, application.getApplicationContext().getString(R.string.api_key2));
+        Call<MealResponse> call = recipeMealApiService.getRecipeMeal(nameCategory, application.getApplicationContext().getString(R.string.api_key));
         Log.d("Hellowrold", call.request() + "");
 
-            call.enqueue(new Callback<MealResponse>() {
-                @Override
-                public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                    MealResponse recipeCategory = response.body();
-                    if (recipeCategory != null && recipeCategory.getMeals() != null) {
-                        meals = recipeCategory.getMeals();
-                        dataMeal = (ArrayList<Meal>) meals.getData();
-                        dataMealLiveDataRetrofit.postValue(dataMeal);
-
-                        // Duyệt qua danh sách tên category lấy từ Retrofit
-                        for (Meal meal : meals.getData()) {
-                            meal.setImgUrl(uploadImageToFirebaseStorage(meal.getName()));
-                            saveMealToFirebase(meal,nameCategory);
-                        }
-                    } else {
-                        Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
+        call.enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                MealResponse recipeCategory = response.body();
+                if (recipeCategory != null && recipeCategory.getMeals() != null) {
+                    meals = recipeCategory.getMeals();
+                    dataMeal = (ArrayList<Meal>) meals.getData();
+                    dataMealLiveDataRetrofit.postValue(dataMeal);
+                    // Duyệt qua danh sách tên category lấy từ Retrofit
+                    for (Meal meal : meals.getData()) {
+                        meal.setImgUrl(uploadImageToFirebaseStorage(meal.getName()));
+                        saveMealToFirebase(meal, nameCategory);
                     }
+                } else {
+                    Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                 }
-                @Override
-                public void onFailure(Call<MealResponse> call, Throwable t) {
-                }
-            });
+            }
+            @Override
+            public void onFailure(Call<MealResponse> call, Throwable t) {
+
+            }
+        });
 
         return dataMealLiveDataRetrofit;
     }
@@ -193,15 +198,16 @@ public class RecipeResponsiveRetrofit {
 
     }
 
-    private void saveMealToFirebase(BaseCategory meal,String nameCategory) {
-        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories/"+nameCategory);
+    private void saveMealToFirebase(BaseCategory meal, String nameCategory) {
+        nameCategory = nameCategory.toLowerCase().replace(" ", "_");
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories/" + nameCategory);
         // Tạo key tự động cho mỗi category
-        if (meal.getId() != null ) {
-            int key = meal.getId();
-            categoriesRef.child(key+"").setValue(meal);
+        if (meal.getName() != null && meal.getName() != "") {
+            String key = meal.getName().toLowerCase().replace(" ", "_");
+            categoriesRef.child(key).setValue(meal);
         } else {
             String key = "Loading";
-            categoriesRef.child("zxc").setValue(meal);
+            categoriesRef.child(key).setValue(meal);
         }
     }
 

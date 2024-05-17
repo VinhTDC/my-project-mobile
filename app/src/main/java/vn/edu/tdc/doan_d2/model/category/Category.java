@@ -24,10 +24,10 @@ public class Category implements BaseCategory {
         this.imgUrl = imgUrl;
     }
     public Category( String name, String imgUrl) {
-
         this.name = name;
         this.imgUrl = imgUrl;
     }
+
 
     public Category() {
 
@@ -43,13 +43,12 @@ public class Category implements BaseCategory {
 
     @Override
     public Integer getId() {
-        return null;
+        return id;
     }
-
 
     @Override
     public void setId(Integer id) {
-
+        this.id = id;
     }
 
     @Override

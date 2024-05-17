@@ -14,8 +14,6 @@ public interface CategoryDataSource {
    void loadCategoriesFromFirebase(boolean isCategory);
 
     DatabaseReference getCategoriesFromFirebase();
-    // Get Meal
     DatabaseReference getMealsFromFirebase();
     void loadMealFromFirebase(String nameCategory);
-    MutableLiveData<ArrayList<BaseMeal>> getAllMeals(String nameCategory);
 }
