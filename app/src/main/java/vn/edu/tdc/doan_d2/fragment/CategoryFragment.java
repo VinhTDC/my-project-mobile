@@ -2,6 +2,7 @@ package vn.edu.tdc.doan_d2.fragment;
 
 import android.annotation.SuppressLint;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -31,17 +32,20 @@ import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
+import vn.edu.tdc.doan_d2.model.meal.BaseMeal;
 import vn.edu.tdc.doan_d2.model.responsive.category.CategoryFilter;
 import vn.edu.tdc.doan_d2.model.responsive.category.CategoryRecipeResponsive;
 import vn.edu.tdc.doan_d2.view.MyAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
+import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
 
 
-public class CategoryFragment extends Fragment implements PaginationInterface {
+public class CategoryFragment extends Fragment implements PaginationInterface, OnCategoryClickListener {
     private FragmentCategoryBinding binding;
 
     private SearchView searchView;
     private ActivityMainBinding bindingMain;
+    CategoryViewModelRetrofit categoryViewModelRetrofit;
 
     private CategoryViewModel viewModelCategory;
 
@@ -56,7 +60,6 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
 
     private CategoryFilter categoryFilter;
     private MutableLiveData<String> currentQueryLiveData = new MutableLiveData<>();
-    private String currentQuery = "";
     private boolean flag;
 
     public void setFlag(boolean flag) {
@@ -109,6 +112,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        categoryViewModelRetrofit = new ViewModelProvider(requireActivity()).get(CategoryViewModelRetrofit.class);
         viewModelCategory = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
         setupRecyclerView();
         // Khởi tạo categoryUtils
@@ -130,7 +134,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
                     @Override
                     public void run() {
                         if (adapter == null) {
-                            adapter = new MyAdapter(requireContext(), newCategories);
+                            adapter = new MyAdapter(requireContext(), newCategories,CategoryFragment.this);
                             binding.recyclerview.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
                         } else {
@@ -262,7 +266,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
                 // Cập nhật Adapter]
                 if (categories != null) {
                     if (adapter == null) {
-                        adapter = new MyAdapter(requireContext(), categories);
+                        adapter = new MyAdapter(requireContext(), categories,CategoryFragment.this);
                         binding.recyclerview.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
                     } else {
@@ -290,5 +294,11 @@ public class CategoryFragment extends Fragment implements PaginationInterface {
         this.currentPage = currentPage;
         Log.d("123213131", "call");
 
+    }
+
+    @Override
+    public void onCategoryClick(BaseCategory category) {
+        categoryViewModelRetrofit.getAllMealRetrofit(category.getName());
+        Log.d("Logzxczxcxzc",category.getName()+"");
     }
 }

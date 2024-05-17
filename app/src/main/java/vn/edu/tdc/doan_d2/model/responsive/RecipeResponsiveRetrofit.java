@@ -123,6 +123,41 @@ public class RecipeResponsiveRetrofit {
         return dataMutableLiveDataRetrofit;
     }
 
+
+    public MutableLiveData<ArrayList<Meal>> getDataMutableLiveDataRetrofit(String nameCategory) {
+        int runCount = getRetrofitRunCount();
+//        if (runCount < 1) { // Kiểm tra số lần chạy
+//            incrementRetrofitRunCount(); // Tăng biến đếm
+            MealApiService` recipeMealApiService = RetrofitInstance.getServiceMeal();
+            Call<MealResponse> call = recipeMealApiService.getRecipeMeal(nameCategory,application.getApplicationContext().getString(R.string.api_key2));
+            Log.d("Hellowrold",call.request()+"");
+            call.enqueue(new Callback<MealResponse>() {
+                @Override
+                public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                    MealResponse recipeCategory = response.body();
+                    if (recipeCategory != null && recipeCategory.getMeals() != null) {
+                        meals = recipeCategory.getMeals();
+                        dataMeal = (ArrayList<Meal>) meals.getData();
+                        dataMealLiveDataRetrofit.postValue(dataMeal);
+                        // Duyệt qua danh sách tên category lấy từ Retrofit
+                        for (Meal meal : meals.getData()) {
+                            meal.setImgUrl(uploadImageToFirebaseStorage(meal.getName()));
+                            saveMealToFirebase(meal,nameCategory);
+                        }
+                    } else {
+                        Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MealResponse> call, Throwable t) {
+
+                }
+            });
+//        }
+        return dataMealLiveDataRetrofit;
+    }
+
     private void saveCategoryToFirebase(BaseCategory category, boolean isCategory) {
 
         if (isCategory) {

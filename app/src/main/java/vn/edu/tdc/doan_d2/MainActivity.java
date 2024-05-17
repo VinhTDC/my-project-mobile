@@ -3,6 +3,7 @@ package vn.edu.tdc.doan_d2;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -133,6 +134,11 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("onResume","cal");
+    }
 
     private void runRetrofit() {
         loadDataRetrofitToFirebase();

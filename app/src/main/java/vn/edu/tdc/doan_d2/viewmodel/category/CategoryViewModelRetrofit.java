@@ -8,11 +8,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 
+import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.model.responsive.RecipeResponsiveRetrofit;
 
 
 public class CategoryViewModelRetrofit extends AndroidViewModel {
     private RecipeResponsiveRetrofit recipeCategoryResponsiveRetrofit;
+    private String nameCategory;
 
     public CategoryViewModelRetrofit(@NonNull Application application) {
         super(application);
@@ -23,4 +25,8 @@ public class CategoryViewModelRetrofit extends AndroidViewModel {
     public MutableLiveData<ArrayList<String>> getAllCategoryRetrofit(boolean isCategory){
         return recipeCategoryResponsiveRetrofit.getDataMutableLiveDataRetrofit(isCategory);
     }
+    public MutableLiveData<ArrayList<Meal>> getAllMealRetrofit(String nameCategory){
+        return recipeCategoryResponsiveRetrofit.getDataMutableLiveDataRetrofit(nameCategory);
+    }
+
 }
