@@ -124,7 +124,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
         dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("LogSnapShot", dataSnapshot.getValue() + "");
+                Log.d("LogSnapShot", nameCategory + "");
                 if (dataSnapshot.exists()) {
                     mealsData.clear();
                     for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {

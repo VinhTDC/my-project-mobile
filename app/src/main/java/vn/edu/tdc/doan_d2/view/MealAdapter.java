@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -27,13 +26,9 @@ import java.util.ArrayList;
 
 import vn.edu.tdc.doan_d2.R;
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryItemBinding;
-import vn.edu.tdc.doan_d2.fragment.OnCategoryClickListener;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
-import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
-import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 import vn.edu.tdc.doan_d2.model.meal.Meal;
-import vn.edu.tdc.doan_d2.model.responsive.category.CategoryRecipeResponsive;
 
 
 public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> {
@@ -176,6 +171,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
             }
         }
     }
+
     public void setData(ArrayList<BaseCategory> newData) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(getData(), newData));
         data.clear();
