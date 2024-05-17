@@ -67,7 +67,6 @@ public class CategoryViewModel extends AndroidViewModel {
             recipeCategoryResponsive.getAllMeals(nameCategory).observe(lifecycleOwner, allMeals -> {
                 List<BaseCategory> mealsForPage = new ArrayList<>();
                 if (allMeals != null) { // Kiểm tra null
-                    Log.d("addtobac","called");
                     int startIndex = page * pageSize;
                     int endIndex = Math.min(startIndex + pageSize, allMeals.size());
                     if (startIndex >= endIndex) {

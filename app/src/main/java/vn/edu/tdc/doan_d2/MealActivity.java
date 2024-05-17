@@ -54,10 +54,12 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("categoryName")) {
             String categoryName = intent.getStringExtra("categoryName");
+            categoryName = categoryName.toLowerCase();
+            Log.d("zxc",categoryName.toLowerCase());
             viewModel.setNameCategory(categoryName);
+
         }
         setupToolbar();
-        runRetrofit();
         swipeRefreshLayout = binding.swipeLayoutMeal;
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -120,27 +122,13 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
         toggle.syncState();
     }
 
-    private void loadDataRetrofitToFirebase() {
-        loadData = new CategoryViewModelRetrofit(getApplication());
-        viewModel.getIsCategory().observe(this, isCategory -> {
 
-            loadData.getAllCategoryRetrofit(isCategory).observe(this, new Observer<ArrayList<String>>() {
-                @Override
-                public void onChanged(ArrayList<String> strings) {
-                }
-            });
-        });
-    }
 
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d("onResume","cal");
-    }
-
-    private void runRetrofit() {
-        loadDataRetrofitToFirebase();
     }
 
     private void addCategoryFragmentWithPaginationInterface() {

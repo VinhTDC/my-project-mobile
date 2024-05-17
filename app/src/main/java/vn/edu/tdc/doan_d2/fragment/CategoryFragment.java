@@ -296,9 +296,10 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
 
     @Override
     public void onCategoryClick(BaseCategory meal) {
-
+        String nameCategory = meal.getName().toLowerCase();
+        categoryViewModelRetrofit.getAllMealRetrofit(meal.getName());
         Intent intent = new Intent(getActivity(), MealActivity.class); // Activity chứa MealFragment
-        intent.putExtra("categoryName", meal.getName());
+        intent.putExtra("categoryName", nameCategory);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
