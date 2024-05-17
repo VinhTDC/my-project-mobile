@@ -19,20 +19,27 @@ import java.util.ArrayList;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
+import vn.edu.tdc.doan_d2.model.meal.BaseMeal;
+import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 
 
 public class CategoryRecipeResponsive implements CategoryDataSource {
     private Application application;
-    private final MutableLiveData<ArrayList<BaseCategory>> categoriesLiveData = new MutableLiveData<>();
+
     private CategoryViewModel viewModel;
 
-    private ArrayList<BaseCategory> categories;
+    private MutableLiveData<ArrayList<BaseCategory>> categoriesLiveData = new MutableLiveData<>();
+    private ArrayList<BaseCategory> categoriesData;
 
-    private boolean isCategory ;
+    private MutableLiveData<ArrayList<BaseCategory>> mealsLiveData = new MutableLiveData<>();
+    private ArrayList<BaseCategory> mealsData;
+
+    private boolean isCategory;
     private boolean isDataLoaded = false;
 
     private static final String PREF_RETROFIT_RUN_COUNT = "retrofit_run_count";
+
     public CategoryRecipeResponsive(Application application, CategoryViewModel viewModel) {
         this.application = application;
         this.viewModel = viewModel;
@@ -40,19 +47,31 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
 
     @Override
     public MutableLiveData<ArrayList<BaseCategory>> getAllCategories(boolean isCategory) {
-        if (categories == null) {
+        if (categoriesData == null) {
             loadCategoriesFromFirebase(isCategory);
-        } else if (categories != null && !isDataLoaded) {
+        } else if (categoriesData != null && !isDataLoaded) {
+            Log.d("Firebase", "Data snapshot is empty");
+
             isDataLoaded = true;
-            categoriesLiveData.postValue(categories);
+            categoriesLiveData.postValue(categoriesData);
         }
         return categoriesLiveData;
     }
 
+    public MutableLiveData<ArrayList<BaseCategory>> getAllMeals(String nameCategory) {
+        if (mealsData == null) {
+            loadMealFromFirebase(nameCategory);
+        } else if (mealsData != null && !isDataLoaded) {
+            isDataLoaded = true;
+            mealsLiveData.postValue(mealsData);
+        }
+        return mealsLiveData;
+    }
+
     @Override
     public void loadCategoriesFromFirebase(boolean isCategory) {
-        if (categories == null) {
-            categories = new ArrayList<>();
+        if (categoriesData == null) {
+            categoriesData = new ArrayList<>();
         }
         DatabaseReference categoryRef = getCategoriesFromFirebase();
 
@@ -62,12 +81,8 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    categories.clear();
+                    categoriesData.clear();
                     for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
-                        String id = "";
-                        if (categorySnapshot.child("id").exists()) {
-                            id = categorySnapshot.child("id").getValue(String.class);
-                        }
                         String name = "";
                         if (categorySnapshot.child("name").exists()) {
                             name = categorySnapshot.child("name").getValue(String.class);
@@ -78,16 +93,16 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
                         }
                         BaseCategory category;
                         if (isCategory) {
-                            category = new Category(id, name, imageUrl);
+                            category = new Category(name, imageUrl);
                         } else {
-                            category = new Cuisine(id, name, imageUrl);
+                            category = new Cuisine(name, imageUrl);
                         }
-                        categories.add(category);
+                        categoriesData.add(category);
                     }
                 } else {
                     Log.d("Firebase", "Data snapshot is empty");
                 }
-                categoriesLiveData.postValue(categories);
+                categoriesLiveData.postValue(categoriesData);
             }
 
             @Override
@@ -98,18 +113,67 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     }
 
     @Override
+    public void loadMealFromFirebase(String nameCategory) {
+        if (mealsData == null) {
+            mealsData = new ArrayList<>();
+        }
+        DatabaseReference mealRef = getMealsFromFirebase();
+        // Reference đến node con cụ thể dựa trên isCategory
+        DatabaseReference dataRef = mealRef.child(nameCategory);
+
+        dataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("LogSnapShot", dataSnapshot.getValue() + "");
+                if (dataSnapshot.exists()) {
+                    mealsData.clear();
+                    for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
+                        Integer id = 0;
+                        if (categorySnapshot.child("id").exists()) {
+                            id = categorySnapshot.child("id").getValue(Integer.class);
+                        }
+                        String name = "";
+                        if (categorySnapshot.child("name").exists()) {
+                            name = categorySnapshot.child("name").getValue(String.class);
+                        }
+                        String imageUrl = "";
+                        if (categorySnapshot.child("imgUrl").exists()) {
+                            imageUrl = categorySnapshot.child("imgUrl").getValue(String.class);
+                        }
+
+                        Meal meal = new Meal(id, name, imageUrl);
+
+
+                        mealsData.add(meal);
+                    }
+                } else {
+                    Log.d("Firebase", "Data snapshot is empty");
+                }
+                mealsLiveData.postValue(mealsData);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                mealsLiveData.setValue(null);
+            }
+        });
+    }
+
+    @Override
     public DatabaseReference getCategoriesFromFirebase() {
-//        if (isCategory) {
-//            return FirebaseDatabase.getInstance().getReference("categories");
-//        } else {
-//            return FirebaseDatabase.getInstance().getReference("cuisines");
-//        }
         return FirebaseDatabase.getInstance().getReference("Category");
     }
-    public void resetCategories(){
-        categories = null;
+
+    @Override
+    public DatabaseReference getMealsFromFirebase() {
+        return FirebaseDatabase.getInstance().getReference("Categories");
+    }
+
+    public void resetCategories() {
+        categoriesData = null;
         isDataLoaded = false;
     }
+
     private int getRetrofitRunCount() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(application);
         return prefs.getInt(PREF_RETROFIT_RUN_COUNT, 0); // Lấy số lần chạy, mặc định là 0

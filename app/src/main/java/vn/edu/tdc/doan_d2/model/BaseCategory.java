@@ -5,7 +5,7 @@ public interface BaseCategory {
     String getImgUrl();
     void setName(String name);
     void setImgUrl(String imgUrl);
-    String getId();
-    void setId(String id);
+    Integer getId();
+    void setId(Integer id);
 
 }

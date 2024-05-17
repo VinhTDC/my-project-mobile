@@ -28,4 +28,13 @@ public class RetrofitInstance {
         }
         return retrofit.create(RecipeCuisineApiService.class);
     }
+    public static MealApiService getServiceMeal() {
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit.create(MealApiService.class);
+    }
 }

@@ -1,6 +1,7 @@
 package vn.edu.tdc.doan_d2.viewmodel.category;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -23,6 +24,8 @@ public class CategoryViewModel extends AndroidViewModel {
     private final MutableLiveData<Integer> categoriesCountLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<ArrayList<BaseCategory>> filteredCategoriesLiveData = new MutableLiveData<>();
     private MutableLiveData<Boolean> isCategory = new MutableLiveData<>(true);
+    private MutableLiveData<String> nameCategory = new MutableLiveData<>();
+
     private CategoryFragment fragment;
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
@@ -57,7 +60,31 @@ public class CategoryViewModel extends AndroidViewModel {
         });
         return pageData;
     }
+    public MutableLiveData<ArrayList<BaseCategory>> loadMealsForPage(int page, int pageSize, LifecycleOwner lifecycleOwner) {
+        isLoading.postValue(true);
+        MutableLiveData<ArrayList<BaseCategory>> pageData = new MutableLiveData<>();
+        nameCategory.observe(lifecycleOwner, nameCategory ->{
+            recipeCategoryResponsive.getAllMeals(nameCategory).observe(lifecycleOwner, allMeals -> {
+                List<BaseCategory> mealsForPage = new ArrayList<>();
+                if (allMeals != null) { // Kiểm tra null
+                    Log.d("addtobac","called");
+                    int startIndex = page * pageSize;
+                    int endIndex = Math.min(startIndex + pageSize, allMeals.size());
+                    if (startIndex >= endIndex) {
+                        pageData.postValue(new ArrayList<>()); // Trả về danh sách rỗng cho pageData
+                    } else {
+                        categoriesCountLiveData.setValue(allMeals.size());
+                        mealsForPage = allMeals.subList(startIndex, endIndex);
+                        pageData.postValue(new ArrayList<>(mealsForPage));
+                    }
+                }
+                pageData.postValue(new ArrayList<>(mealsForPage)); // Cập nhật LiveData trên Main Thread
+                isLoading.postValue(false); // Kết thúc tải
+            });
 
+        });
+        return pageData;
+    }
     public LiveData<Integer> getCategoriesCountLiveData() {
         return categoriesCountLiveData;
     }
@@ -65,10 +92,6 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public LiveData<ArrayList<BaseCategory>> getFilteredCategoriesLiveData() {
         return filteredCategoriesLiveData;
-    }
-
-    public void setFilteredCategoriesLiveData(ArrayList<BaseCategory> filteredCategories) {
-        filteredCategoriesLiveData.postValue(filteredCategories);
     }
 
     public void updateSearchQuery(String query, int page, int pageSize, LifecycleOwner lifecycleOwner) {
@@ -86,6 +109,14 @@ public class CategoryViewModel extends AndroidViewModel {
     public void setIsCategory(boolean key) {
         this.isCategory.postValue(key);
         recipeCategoryResponsive.resetCategories();
+    }
+
+    public MutableLiveData<String> getNameCategory() {
+        return nameCategory;
+    }
+
+    public void setNameCategory(String nameCategory) {
+        this.nameCategory.setValue(nameCategory);
     }
 
     public LiveData<Boolean> getIsCategory() {
