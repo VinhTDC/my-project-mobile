@@ -68,7 +68,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
         BaseCategory item = data.get(position);
         return item.getId().hashCode(); // Giả sử BaseCategory có thuộc tính id
     }
-
+    @Override
+    public BaseCategory getItem(int position) {
+        if (position >= 0 && position < data.size()) { // Check for valid position
+            return data.get(position);
+        } else {
+            return null; // Or throw an IllegalArgumentException
+        }
+    }
     @Override
     public int getItemViewType(int position) {
         BaseCategory item = data.get(position);
@@ -120,14 +127,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
         return data != null ? data.size() : 0;
     }
 
-    @Override
-    public BaseCategory getItem(int position) {
-        if (position >= 0 && position < data.size()) { // Check for valid position
-            return data.get(position);
-        } else {
-            return null; // Or throw an IllegalArgumentException
-        }
-    }
+
 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

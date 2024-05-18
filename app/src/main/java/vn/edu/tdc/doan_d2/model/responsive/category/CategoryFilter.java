@@ -15,7 +15,6 @@
 
     import vn.edu.tdc.doan_d2.model.BaseCategory;
     import vn.edu.tdc.doan_d2.model.category.Category;
-
     import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
     import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 

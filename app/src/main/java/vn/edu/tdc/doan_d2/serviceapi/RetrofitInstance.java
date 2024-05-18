@@ -37,4 +37,14 @@ public class RetrofitInstance {
         }
         return retrofit.create(MealApiService.class);
     }
+    public static MealDetailService getServiceMealDetail(){
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit.create(MealDetailService.class);
+    }
+
 }

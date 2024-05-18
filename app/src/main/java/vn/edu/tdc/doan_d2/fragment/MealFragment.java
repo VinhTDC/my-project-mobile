@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
+import vn.edu.tdc.doan_d2.databinding.FragmentMealListBinding;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
 import vn.edu.tdc.doan_d2.model.responsive.category.CategoryFilter;
@@ -35,8 +36,8 @@ import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
 
 
-public class MealFragment extends Fragment implements PaginationInterface {
-    private FragmentCategoryBinding binding;
+public class MealFragment extends Fragment implements PaginationInterface,OnMealClickListener {
+    private FragmentMealListBinding binding;
 
     private SearchView searchView;
     private ActivityMainBinding bindingMain;
@@ -87,7 +88,7 @@ public class MealFragment extends Fragment implements PaginationInterface {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentCategoryBinding.inflate(inflater, container, false);
+        binding = FragmentMealListBinding.inflate(inflater, container, false);
         binding.getRoot().setTag(tagFragment);
         return binding.getRoot();
     }
@@ -109,7 +110,7 @@ public class MealFragment extends Fragment implements PaginationInterface {
     }
 
     private void updateCategoriesInAdapter(ArrayList<BaseCategory> newCategories) {
-        if (!binding.recyclerview.isComputingLayout()) {
+        if (!binding.recyclerViewMeal.isComputingLayout()) {
             isUpdatingAdapter = true;
             if (newCategories != null) {// Bắt đầu cập nhật Adapter
                 getActivity().runOnUiThread(new Runnable() {
@@ -117,8 +118,8 @@ public class MealFragment extends Fragment implements PaginationInterface {
                     @Override
                     public void run() {
                         if (adapter == null) {
-                            adapter = new MealAdapter(requireContext(), newCategories);
-                            binding.recyclerview.setAdapter(adapter);
+                            adapter = new MealAdapter(requireContext(), newCategories,MealFragment.this);
+                            binding.recyclerViewMeal.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
                         } else {
                             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), newCategories));
@@ -137,9 +138,9 @@ public class MealFragment extends Fragment implements PaginationInterface {
     }
 
     private void setupRecyclerView() {
-        binding.recyclerview.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        binding.recyclerview.setItemAnimator(new DefaultItemAnimator());
-        binding.recyclerview.setAdapter(adapter);
+        binding.recyclerViewMeal.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        binding.recyclerViewMeal.setItemAnimator(new DefaultItemAnimator());
+        binding.recyclerViewMeal.setAdapter(adapter);
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -245,8 +246,8 @@ public class MealFragment extends Fragment implements PaginationInterface {
 
                 if (meals != null) {
                     if (adapter == null) {
-                        adapter = new MealAdapter(requireContext(), meals);
-                        binding.recyclerview.setAdapter(adapter);
+                        adapter = new MealAdapter(requireContext(), meals,MealFragment.this);
+                        binding.recyclerViewMeal.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
                     } else {
                         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), meals));
@@ -260,7 +261,7 @@ public class MealFragment extends Fragment implements PaginationInterface {
                     Log.e("CategoryFragment", "Failed to load categories for page " + page);
 
                 }
-                binding.recyclerview.scrollToPosition(0);
+                binding.recyclerViewMeal.scrollToPosition(0);
                 isLoading = false; // Finish loading
             }
         });
@@ -283,5 +284,10 @@ public class MealFragment extends Fragment implements PaginationInterface {
     public void onDestroyView() {
         super.onDestroyView();
         Glide.with(this).pauseRequests();
+    }
+
+    @Override
+    public void onMealClick(BaseCategory meal) {
+        categoryViewModelRetrofit.getAllMealDetailRetrofit(meal.getId());
     }
 }

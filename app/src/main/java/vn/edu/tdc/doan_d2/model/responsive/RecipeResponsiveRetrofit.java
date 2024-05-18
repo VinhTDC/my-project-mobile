@@ -26,7 +26,11 @@ import vn.edu.tdc.doan_d2.model.cuisine.Cuisines;
 import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.model.meal.MealResponse;
 import vn.edu.tdc.doan_d2.model.meal.Meals;
+import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
+import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailResponse;
+import vn.edu.tdc.doan_d2.model.mealdetail.Recipe;
 import vn.edu.tdc.doan_d2.serviceapi.MealApiService;
+import vn.edu.tdc.doan_d2.serviceapi.MealDetailService;
 import vn.edu.tdc.doan_d2.serviceapi.RecipeCategoryApiService;
 import vn.edu.tdc.doan_d2.serviceapi.RecipeCuisineApiService;
 import vn.edu.tdc.doan_d2.serviceapi.RetrofitInstance;
@@ -35,12 +39,15 @@ import vn.edu.tdc.doan_d2.serviceapi.RetrofitInstance;
 public class RecipeResponsiveRetrofit {
     private final MutableLiveData<ArrayList<String>> dataMutableLiveDataRetrofit = new MutableLiveData<ArrayList<String>>();
     private final MutableLiveData<ArrayList<Meal>> dataMealLiveDataRetrofit = new MutableLiveData<ArrayList<Meal>>();
+    private final MutableLiveData<MealDetailData> mealDetailDataMutableLiveData = new MutableLiveData<>();
 
     private Categories categories;
     private Meals meals;
+    private Recipe mealDetails;
     private Cuisines cuisines;
     private ArrayList<String> data = new ArrayList<>();
     private ArrayList<Meal> dataMeal = new ArrayList<>();
+    private MealDetailData dataMealDetail = new MealDetailData();
 
     private final Application application;
     private static final String PREF_RETROFIT_RUN_COUNT = "retrofit_run_count";
@@ -168,6 +175,40 @@ public class RecipeResponsiveRetrofit {
         }
         return dataMealLiveDataRetrofit;
     }
+    public MutableLiveData<MealDetailData> getDataMealDetailMutableLiveDataRetrofit(int idMeal) {
+        int runCount = getRetrofitRunCount();
+        Log.d("runCount",runCount+"");
+        if (runCount < 100) { // Kiểm tra số lần chạy
+            incrementRetrofitRunCount(); // Tăng biến đếm
+            MealDetailService recipeMealApiService = RetrofitInstance.getServiceMealDetail();
+            Call<MealDetailResponse> call = recipeMealApiService.getRecipeMealDetail(idMeal, application.getApplicationContext().getString(R.string.api_key1));
+            call.enqueue(new Callback<MealDetailResponse>() {
+                @Override
+                public void onResponse(Call<MealDetailResponse> call, Response<MealDetailResponse> response) {
+                    MealDetailResponse recipeMeal = response.body();
+                    if (recipeMeal != null && recipeMeal.getRecipe() != null) {
+                        mealDetails = recipeMeal.getRecipe();
+                        dataMealDetail = mealDetails.getData();
+                        Log.d("dataMealDetail",dataMealDetail.toString()+"" );
+                        mealDetailDataMutableLiveData.postValue(dataMealDetail);
+                        saveMealDetailToFirebase(dataMealDetail, idMeal);
+                        dataMealDetail.setImgUrl(uploadImageToFirebaseStorage(dataMealDetail.getName()));
+                        // Duyệt qua danh sách tên category lấy từ Retrofit
+
+                    } else {
+                        Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MealDetailResponse> call, Throwable t) {
+
+                }
+            });
+        }
+        return mealDetailDataMutableLiveData;
+    }
+
 
     private void saveCategoryToFirebase(BaseCategory category, boolean isCategory) {
 
@@ -197,20 +238,31 @@ public class RecipeResponsiveRetrofit {
 
     private void saveMealToFirebase(BaseCategory meal, String nameCategory) {
         nameCategory = nameCategory.toLowerCase().replace("_", " ");
-        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories/" + nameCategory);
+        DatabaseReference mealRef = FirebaseDatabase.getInstance().getReference("Categories/" + nameCategory);
         // Tạo key tự động cho mỗi category
         if (meal.getName() != null && meal.getName() != "") {
             String key = meal.getName().toLowerCase().replaceAll("[_.#$\\[\\]]", " ");
             key = key.replaceAll("_"," ");
-            categoriesRef.child(key).setValue(meal);
+            mealRef.child(key).setValue(meal);
         } else {
             String key = "Loading";
-            categoriesRef.child(key).setValue(meal);
+            mealRef.child(key).setValue(meal);
         }
     }
+    private void saveMealDetailToFirebase(MealDetailData mealDetail, int idMeal) {
+        DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + idMeal);
+        // Tạo key tự động cho mỗi category
+        if(idMeal != 0){
+            mealDetailRef.child(idMeal+"").setValue(mealDetail);
+        } else {
+            String key = "Loading";
+            mealDetailRef.child(key).setValue(mealDetail);
+        }
 
-    private String uploadImageToFirebaseStorage(String categoryName) {
-        return categoryName + ".jpg";
+    }
+
+    private String uploadImageToFirebaseStorage(String name) {
+        return name + ".jpg";
     }
 
     private int getRetrofitRunCount() {
