@@ -2,6 +2,7 @@ package vn.edu.tdc.doan_d2.model.responsive.mealdetail;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -16,12 +17,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import vn.edu.tdc.doan_d2.model.comment.Comment;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
 import vn.edu.tdc.doan_d2.viewmodel.mealdetail.MealDetailViewModel;
 
 public class MealDetailResponsive implements MealDetailDataSource{
     private MutableLiveData<MealDetailData> mealLiveDetailData = new MutableLiveData<>();
     private MealDetailData mealDetailData;
+    private Comment commentMeal;
+    private ArrayList<Comment> commentMeals;
+    private MutableLiveData<ArrayList<Comment>> commentMutableLiveData = new MutableLiveData<>();
     private boolean isDataLoaded = false;
     private Application application;
     private MealDetailViewModel mealDetailViewModel;
@@ -35,8 +40,6 @@ public class MealDetailResponsive implements MealDetailDataSource{
     @Override
     public MutableLiveData<MealDetailData> getMealDetail(String idMeal) {
         if (mealDetailData == null) {
-
-
             loadMealDetailGeneralFromFirebase(idMeal);
         } else if (mealDetailData != null && !isDataLoaded) {
             isDataLoaded = true;
@@ -55,14 +58,12 @@ public class MealDetailResponsive implements MealDetailDataSource{
         if(mealDetailData == null){
             mealDetailData = new MealDetailData();
         }
-
         DatabaseReference mealDetailRef = getMealDetailFromFirebase();
         DatabaseReference dataRef = mealDetailRef.child(idMeal);
         dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 DataSnapshot dataSnapshot = snapshot.child(idMeal);
-
                 if(dataSnapshot.exists()){
                     String name  = "";
                     if(dataSnapshot.child("name").exists()){
@@ -119,7 +120,7 @@ public class MealDetailResponsive implements MealDetailDataSource{
     }
     @Override
     public void loadMealDetailDirectionFromFirebase(int idMeal) {
-        if(mealDetailData != null){
+        if (mealDetailData == null) {
             mealDetailData = new MealDetailData();
         }
         String stringIdMeal = idMeal+"";
@@ -160,5 +161,73 @@ public class MealDetailResponsive implements MealDetailDataSource{
                 mealLiveDetailData.postValue(null);
             }
         });
+    }
+
+    public MutableLiveData<ArrayList<Comment>> getComment(String idMeal) {
+        if (commentMeals == null) {
+
+            loadCommentFromFirebase(idMeal);
+        } else if (commentMeals != null && !isDataLoaded) {
+            isDataLoaded = true;
+            commentMutableLiveData.postValue(commentMeals);
+        }
+        return commentMutableLiveData;
+    }
+
+    public void loadCommentFromFirebase(String idMeal) {
+        if (commentMeals == null) {
+            commentMeals = new ArrayList<>();
+        }
+        DatabaseReference mealDetailRef = getCommentFromFirebase();
+        DatabaseReference dataRef = mealDetailRef.child(idMeal);
+        dataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    commentMeals.clear();
+                    for (DataSnapshot commentSnapshot : snapshot.getChildren()) {
+                        String user = "";
+                        if (commentSnapshot.child("userName").exists()) {
+                            user = commentSnapshot.child("userName").getValue(String.class);
+                        }
+                        String comment = "";
+                        if (commentSnapshot.child("comment").exists()) {
+                            comment = commentSnapshot.child("comment").getValue(String.class);
+                        }
+                        float rating = 0;
+                        if (commentSnapshot.child("rating").exists()) {
+                            rating = commentSnapshot.child("rating").getValue(Float.class);
+                        }
+                        commentMeal = new Comment(comment, user, rating);
+                        commentMeals.add(commentMeal);
+                    }
+                }
+                commentMutableLiveData.postValue(commentMeals);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                commentMutableLiveData.postValue(null);
+            }
+        });
+    }
+
+
+    public DatabaseReference getCommentFromFirebase() {
+        return FirebaseDatabase.getInstance().getReference("Comments");
+    }
+
+    public void sendCommentToFirebase(Comment comment, String idMeal) {
+        DatabaseReference commentsRef = FirebaseDatabase.getInstance().getReference("Comments/" + idMeal);
+//        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        if (idMeal != null) {
+            commentsRef.child(idMeal).setValue(comment).addOnSuccessListener(aVoid -> {
+                Toast.makeText(application.getApplicationContext(), "Comment added successfully!", Toast.LENGTH_SHORT).show();
+            }).addOnFailureListener(e -> {
+                // Xử lý lỗi khi gửi bình luận
+                Toast.makeText(application.getApplicationContext(), "Fail!", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 }

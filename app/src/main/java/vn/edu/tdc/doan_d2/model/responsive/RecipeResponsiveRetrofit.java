@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -21,6 +22,7 @@ import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Categories;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.category.CategoryResponse;
+import vn.edu.tdc.doan_d2.model.comment.Comment;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
 import vn.edu.tdc.doan_d2.model.cuisine.CuisineResponse;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisines;
@@ -252,18 +254,7 @@ public class RecipeResponsiveRetrofit {
             mealRef.child(key).setValue(meal);
         }
     }
-    private void saveMealDetailToFirebase(MealDetailData mealDetail, int idMeal) {
-        String stringIdMeal  = idMeal+"";
-        DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + stringIdMeal);
-        // Tạo key tự động cho mỗi category
-        if(idMeal != 0){
-            mealDetailRef.child(stringIdMeal).setValue(mealDetail);
-        } else {
-            String key = "Loading";
-            mealDetailRef.child(key).setValue(mealDetail);
-        }
 
-    }
 
     private String uploadImageToFirebaseStorage(String name) {
         return name + ".jpg";
@@ -288,5 +279,22 @@ public class RecipeResponsiveRetrofit {
         editor.putInt(PREF_RETROFIT_RUN_COUNT, 0);
         editor.apply();
     }
+
+    private void saveMealDetailToFirebase(MealDetailData mealDetail, int idMeal) {
+        String stringIdMeal  = idMeal+"";
+        DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + stringIdMeal);
+        // Tạo key tự động cho mỗi category
+        if(idMeal != 0){
+            mealDetailRef.child(stringIdMeal).setValue(mealDetail);
+        } else {
+            String key = "Loading";
+            mealDetailRef.child(key).setValue(mealDetail);
+        }
+
+    }
+
+    //Comment
+
+
 
 }

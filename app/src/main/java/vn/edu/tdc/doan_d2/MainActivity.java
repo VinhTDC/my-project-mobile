@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
             public void onClick(View v) {
 
                     fragment.goToNextPage();
-
-
             }
         });
         binding.buttonPre.setOnClickListener(new View.OnClickListener() {
