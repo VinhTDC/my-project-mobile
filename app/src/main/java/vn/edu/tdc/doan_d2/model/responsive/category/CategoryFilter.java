@@ -15,7 +15,6 @@
 
     import vn.edu.tdc.doan_d2.model.BaseCategory;
     import vn.edu.tdc.doan_d2.model.category.Category;
-
     import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
     import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 
@@ -73,6 +72,8 @@
             Log.d("baseCategory",filteredLiveData.getValue()+"");
             return filteredLiveData;
         }
+
+
         public CategoryFilter(CategoryViewModel viewModel, CategoryRecipeResponsive responsive) {
             this.responsive = responsive;
             this.viewModel = viewModel;

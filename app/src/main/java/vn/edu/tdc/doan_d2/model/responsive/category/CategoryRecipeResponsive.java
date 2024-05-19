@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.Category;
 import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
-import vn.edu.tdc.doan_d2.model.meal.BaseMeal;
 import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
+import vn.edu.tdc.doan_d2.viewmodel.mealdetail.MealDetailViewModel;
 
 
 public class CategoryRecipeResponsive implements CategoryDataSource {
@@ -39,11 +39,14 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     private boolean isDataLoaded = false;
 
     private static final String PREF_RETROFIT_RUN_COUNT = "retrofit_run_count";
+    private MealDetailViewModel viewModelMeal;
 
     public CategoryRecipeResponsive(Application application, CategoryViewModel viewModel) {
         this.application = application;
         this.viewModel = viewModel;
     }
+
+
 
     @Override
     public MutableLiveData<ArrayList<BaseCategory>> getAllCategories(boolean isCategory) {
@@ -124,7 +127,6 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
         dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("LogSnapShot", nameCategory + "");
                 if (dataSnapshot.exists()) {
                     mealsData.clear();
                     for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {

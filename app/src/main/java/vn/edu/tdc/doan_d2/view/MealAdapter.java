@@ -25,21 +25,27 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import vn.edu.tdc.doan_d2.R;
-import vn.edu.tdc.doan_d2.databinding.FragmentCategoryItemBinding;
+import vn.edu.tdc.doan_d2.databinding.FragmentMealItemBinding;
+import vn.edu.tdc.doan_d2.fragment.OnMealClickListener;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
 import vn.edu.tdc.doan_d2.model.meal.Meal;
 
+interface DataProviderMeal {
+    BaseCategory getItem(int position);
+}
 
-public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> {
+public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> implements DataProviderMeal {
     private Context context;
     private ArrayList<BaseCategory> data;
 
     private LayoutInflater inflater;
+    private OnMealClickListener onMealClickListener;
 
-    public MealAdapter(Context context, ArrayList<BaseCategory> data) {
+    public MealAdapter(Context context, ArrayList<BaseCategory> data, OnMealClickListener listener) {
         this.context = context;
         this.data = data;
+        this.onMealClickListener = listener;
         this.inflater = LayoutInflater.from(context);
         setHasStableIds(false);
     }
@@ -47,9 +53,9 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        FragmentCategoryItemBinding binding = DataBindingUtil
-                .inflate(LayoutInflater.from(parent.getContext()), R.layout.fragment_category_item, parent, false);
-        return new MyViewHolder(binding);
+        FragmentMealItemBinding binding = DataBindingUtil
+                .inflate(LayoutInflater.from(parent.getContext()), R.layout.fragment_meal_item, parent, false);
+        return new MyViewHolder(binding, this, onMealClickListener);
     }
 
     @Override
@@ -72,25 +78,45 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
     @Override
     public int getItemCount() {
         return data.size();
+    }
 
+    @Override
+    public long getItemId(int position) {
+        BaseCategory item = data.get(position);
+        return item.getId().hashCode(); // Giả sử BaseCategory có thuộc tính id
+    }
+
+    @Override
+    public BaseCategory getItem(int position) {
+        if (position >= 0 && position < data.size()) { // Check for valid position
+            return data.get(position);
+        } else {
+            return null; // Or throw an IllegalArgumentException
+        }
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private final FragmentCategoryItemBinding categoryListItemBinding;
+        private final FragmentMealItemBinding fragmentMealItemBinding;
+        private final DataProviderMeal dataProvider;
+        private final OnMealClickListener listener;
         private WeakReference<ImageView> imageViewWeakReference;
 
-        public MyViewHolder(FragmentCategoryItemBinding categoryListItemBinding) {
-            super(categoryListItemBinding.getRoot());
-            this.categoryListItemBinding = categoryListItemBinding;
-            this.imageViewWeakReference = new WeakReference<>(categoryListItemBinding.imageCategory);
-            categoryListItemBinding.getRoot().setOnClickListener(v -> {
+        public MyViewHolder(FragmentMealItemBinding fragmentMealItemBinding, DataProviderMeal dataProvider, OnMealClickListener listener) {
+            super(fragmentMealItemBinding.getRoot());
+            this.fragmentMealItemBinding = fragmentMealItemBinding;
+            this.imageViewWeakReference = new WeakReference<>(fragmentMealItemBinding.imageMeal);
+            this.dataProvider = dataProvider;
+            this.listener = listener;
 
+            fragmentMealItemBinding.getRoot().setOnClickListener(v -> {
+                int position = getAbsoluteAdapterPosition();
+                BaseCategory item = dataProvider.getItem(position);
+
+                if (position != RecyclerView.NO_POSITION && listener != null && item != null) {
+                    listener.onMealClick(item);
+                    Log.d("Log.d", item.getId() + "" + position);
+                }
             });
-        }
-
-
-        public interface OnItemClickListener {
-            void onItemClick(BaseCategory category);
         }
 
 
@@ -99,7 +125,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
             // Kiểm tra xem imageUrl không null và không rỗng
             loadImageFromFirebase(imageUrl);
             // Đặt tên danh mục
-            categoryListItemBinding.nameCategory.setText(meal.getName());
+            fragmentMealItemBinding.nameMeal.setText(meal.getName());
         }
 
         public void bind(BaseCategory baseCategory) {
@@ -111,10 +137,10 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
         private void loadImageFromFirebase(String imageUrl) {
             ImageView imageView = imageViewWeakReference.get();
             if (imageUrl != null && !imageUrl.isEmpty() && imageView != null) {
-                Glide.with(categoryListItemBinding.imageCategory.getContext())
+                Glide.with(fragmentMealItemBinding.imageMeal.getContext())
                         .asGif() // Thiết lập tải dưới dạng GIF
                         .load(R.drawable.loadding1) // Đặt tên file loading.gif
-                        .into(categoryListItemBinding.imageCategory);
+                        .into(fragmentMealItemBinding.imageMeal);
                 // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference().child("categories/" + imageUrl);
@@ -123,12 +149,12 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
                 storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Glide.with(categoryListItemBinding.imageCategory.getContext())
+                        Glide.with(fragmentMealItemBinding.imageMeal.getContext())
                                 .load(uri)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .skipMemoryCache(true)
-                                .into(categoryListItemBinding.imageCategory);
-                        Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
+                                .into(fragmentMealItemBinding.imageMeal);
+                        Glide.with(fragmentMealItemBinding.imageMeal.getContext()).resumeRequests();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -138,12 +164,12 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
                             int errorCode = storageException.getErrorCode();
                             String errorMessage = storageException.getMessage();
 
-                            Glide.with(categoryListItemBinding.imageCategory.getContext())
+                            Glide.with(fragmentMealItemBinding.imageMeal.getContext())
                                     .load(R.drawable.img)
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .skipMemoryCache(true)
-                                    .into(categoryListItemBinding.imageCategory);
-                            Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
+                                    .into(fragmentMealItemBinding.imageMeal);
+                            Glide.with(fragmentMealItemBinding.imageMeal.getContext()).resumeRequests();
                             // Xử lý dựa trên mã lỗi và thông điệp
                             switch (errorCode) {
                                 case StorageException.ERROR_OBJECT_NOT_FOUND:
@@ -162,12 +188,12 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
                     }
                 });
             } else {
-                Glide.with(categoryListItemBinding.imageCategory.getContext())
+                Glide.with(fragmentMealItemBinding.imageMeal.getContext())
                         .load(R.drawable.img)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
-                        .into(categoryListItemBinding.imageCategory);
-                Glide.with(categoryListItemBinding.imageCategory.getContext()).resumeRequests();
+                        .into(fragmentMealItemBinding.imageMeal);
+                Glide.with(fragmentMealItemBinding.imageMeal.getContext()).resumeRequests();
             }
         }
     }

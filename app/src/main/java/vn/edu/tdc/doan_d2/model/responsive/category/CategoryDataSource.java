@@ -15,5 +15,6 @@ public interface CategoryDataSource {
 
     DatabaseReference getCategoriesFromFirebase();
     DatabaseReference getMealsFromFirebase();
-    void loadMealFromFirebase(String nameCategory);
+
+    void loadMealFromFirebase(String nameCategoryString);
 }
