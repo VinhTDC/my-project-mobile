@@ -26,7 +26,7 @@ public class MealDetailData {
     private List<String> nutritions;
     @SerializedName("Rating")
     @Expose
-    private String rating;
+    private float rating;
     @SerializedName("Category")
     @Expose
     private String category;
@@ -34,6 +34,7 @@ public class MealDetailData {
     @Expose
     private String cuisine;
     private String imgUrl;
+    private String timeTotal;
 
     public MealDetailData(String name,
                           String description,
@@ -41,7 +42,7 @@ public class MealDetailData {
                           List<String> ingredients,
                           List<String> directions,
                           List<String> nutritions,
-                          String rating,
+                          float rating,
                           String category,
                           String cuisine,
                           String imgUrl) {
@@ -56,6 +57,35 @@ public class MealDetailData {
         this.cuisine = cuisine;
         this.imgUrl = imgUrl;
     }
+    public MealDetailData(String name,
+                          String description,
+                          String timeTotal,
+                          float rating,
+                          String category,
+                          String cuisine,
+                          String imgUrl) {
+        this.name = name;
+        this.description = description;
+        this.timeTotal = timeTotal;
+        this.rating = rating;
+        this.category = category;
+        this.cuisine = cuisine;
+        this.imgUrl = imgUrl;
+    }
+    public MealDetailData(
+                          List<String> time,
+                          List<String> ingredients,
+                          List<String> directions,
+                          List<String> nutritions,
+                          String imgUrl) {
+
+        this.time = time;
+        this.ingredients = ingredients;
+        this.directions = directions;
+        this.nutritions = nutritions;
+        this.imgUrl = imgUrl;
+    }
+
     public MealDetailData(){
 
     }
@@ -108,11 +138,11 @@ public class MealDetailData {
         this.nutritions = nutritions;
     }
 
-    public String getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 
@@ -137,5 +167,13 @@ public class MealDetailData {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getTimeTotal() {
+        return timeTotal;
+    }
+
+    public void setTimeTotal(String timeTotal) {
+        this.timeTotal = timeTotal;
     }
 }

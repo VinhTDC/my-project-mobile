@@ -115,7 +115,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
         categoryViewModelRetrofit = new ViewModelProvider(requireActivity()).get(CategoryViewModelRetrofit.class);
         viewModelCategory = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
         setupRecyclerView();
-        // Khởi tạo categoryUtils
+        // Khởi tạo categoryUtils</layout>
         viewModelCategory.getCategoriesCountLiveData().observe(getViewLifecycleOwner(), total -> {
             this.categoriesCount = total;
         });

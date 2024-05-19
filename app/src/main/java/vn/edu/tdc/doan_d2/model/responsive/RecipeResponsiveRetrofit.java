@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -176,12 +177,14 @@ public class RecipeResponsiveRetrofit {
         return dataMealLiveDataRetrofit;
     }
     public MutableLiveData<MealDetailData> getDataMealDetailMutableLiveDataRetrofit(int idMeal) {
+
         int runCount = getRetrofitRunCount();
         Log.d("runCount",runCount+"");
-        if (runCount < 100) { // Kiểm tra số lần chạy
+        if (runCount < 1000) { // Kiểm tra số lần chạy
+
             incrementRetrofitRunCount(); // Tăng biến đếm
             MealDetailService recipeMealApiService = RetrofitInstance.getServiceMealDetail();
-            Call<MealDetailResponse> call = recipeMealApiService.getRecipeMealDetail(idMeal, application.getApplicationContext().getString(R.string.api_key1));
+            Call<MealDetailResponse> call = recipeMealApiService.getRecipeMealDetail(idMeal, application.getApplicationContext().getString(R.string.api_key));
             call.enqueue(new Callback<MealDetailResponse>() {
                 @Override
                 public void onResponse(Call<MealDetailResponse> call, Response<MealDetailResponse> response) {
@@ -191,10 +194,10 @@ public class RecipeResponsiveRetrofit {
                         dataMealDetail = mealDetails.getData();
                         Log.d("dataMealDetail",dataMealDetail.toString()+"" );
                         mealDetailDataMutableLiveData.postValue(dataMealDetail);
-                        saveMealDetailToFirebase(dataMealDetail, idMeal);
                         dataMealDetail.setImgUrl(uploadImageToFirebaseStorage(dataMealDetail.getName()));
-                        // Duyệt qua danh sách tên category lấy từ Retrofit
+                        saveMealDetailToFirebase(dataMealDetail, idMeal);
 
+                        // Duyệt qua danh sách tên category lấy từ Retrofit
                     } else {
                         Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                     }
@@ -250,10 +253,11 @@ public class RecipeResponsiveRetrofit {
         }
     }
     private void saveMealDetailToFirebase(MealDetailData mealDetail, int idMeal) {
-        DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + idMeal);
+        String stringIdMeal  = idMeal+"";
+        DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + stringIdMeal);
         // Tạo key tự động cho mỗi category
         if(idMeal != 0){
-            mealDetailRef.child(idMeal+"").setValue(mealDetail);
+            mealDetailRef.child(stringIdMeal).setValue(mealDetail);
         } else {
             String key = "Loading";
             mealDetailRef.child(key).setValue(mealDetail);

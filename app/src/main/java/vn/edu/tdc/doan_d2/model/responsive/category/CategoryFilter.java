@@ -72,6 +72,8 @@
             Log.d("baseCategory",filteredLiveData.getValue()+"");
             return filteredLiveData;
         }
+
+
         public CategoryFilter(CategoryViewModel viewModel, CategoryRecipeResponsive responsive) {
             this.responsive = responsive;
             this.viewModel = viewModel;

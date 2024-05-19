@@ -1,6 +1,7 @@
 package vn.edu.tdc.doan_d2.viewmodel.category;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -30,6 +31,7 @@ public class CategoryViewModelRetrofit extends AndroidViewModel {
         return recipeCategoryResponsiveRetrofit.getDataMutableLiveDataRetrofit(nameCategory);
     }
     public MutableLiveData<MealDetailData> getAllMealDetailRetrofit(int idMeal){
+
         return recipeCategoryResponsiveRetrofit.getDataMealDetailMutableLiveDataRetrofit(idMeal);
     }
 }

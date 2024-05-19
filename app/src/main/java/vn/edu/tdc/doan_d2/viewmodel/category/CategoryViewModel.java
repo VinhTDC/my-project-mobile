@@ -35,6 +35,7 @@ public class CategoryViewModel extends AndroidViewModel {
         this.categoryFilter = new CategoryFilter(this, recipeCategoryResponsive);
     }
 
+
     //Live Data
 
     public MutableLiveData<ArrayList<BaseCategory>> loadCategoriesForPage(int page, int pageSize, LifecycleOwner lifecycleOwner) {

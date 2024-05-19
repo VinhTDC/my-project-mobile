@@ -2,6 +2,7 @@ package vn.edu.tdc.doan_d2.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+import vn.edu.tdc.doan_d2.MealActivity;
+
+import vn.edu.tdc.doan_d2.MealDetailActivity;
 import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentMealListBinding;
@@ -289,5 +293,9 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
     @Override
     public void onMealClick(BaseCategory meal) {
         categoryViewModelRetrofit.getAllMealDetailRetrofit(meal.getId());
+        Intent intent = new Intent(getActivity(), MealDetailActivity.class); // Activity chứa MealDetailFragment
+        intent.putExtra("mealId", meal.getId()+"");
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }
