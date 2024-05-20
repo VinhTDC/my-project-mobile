@@ -9,7 +9,6 @@ public class Comment {
     private  float rating;
 
 
-
     public Comment(String comment, String userName, float rating) {
         this.comment = comment;
         this.userName = userName;

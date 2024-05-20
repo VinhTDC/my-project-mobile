@@ -127,8 +127,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/commentsRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:nestedScrollingEnabled="true"
+                android:layout_height="10dp"
+                android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/comment_item" />
         </androidx.core.widget.NestedScrollView>
@@ -155,13 +155,11 @@
                 android:numStars="5"
                 android:rating="5" />
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:focusable="true">
+                android:layout_marginTop="16dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/commentInputLayout"
@@ -178,9 +176,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Add a comment"
-                        android:inputType="text"
-                        app:layoutManager="" />
-
+                        android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
