@@ -57,9 +57,8 @@ public class MealDetailViewModel extends AndroidViewModel {
         });
         return mealData;
     }
-    public LiveData<List<Comment>> getCommentsLiveData() {
-        return commentsLiveData;
-    }
+
+
     @SuppressLint("SuspiciousIndentation")
     public MutableLiveData<List<Comment>> loadCommnet (LifecycleOwner lifecycleOwner) {
         isLoading.postValue(true);

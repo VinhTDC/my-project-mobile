@@ -48,6 +48,7 @@ public class MealDetailResponsive implements MealDetailDataSource{
         return mealLiveDetailData;
     }
 
+
     @Override
     public DatabaseReference getMealDetailFromFirebase() {
         return FirebaseDatabase.getInstance().getReference("RecipeMeal");
@@ -81,7 +82,7 @@ public class MealDetailResponsive implements MealDetailDataSource{
                             for (int j = 0 ; j < line.length ; j++ ){
                                 if(line[0].equals("Total:") ||line[0].equals("Total") ) {
                                     totalTime = timeList.get(i);
-                                    Log.d("zxczcz", totalTime );
+
                                     break;
                                 }
                             }
@@ -103,11 +104,37 @@ public class MealDetailResponsive implements MealDetailDataSource{
                     if(dataSnapshot.child("cuisine").exists()){
                       cuisine =  dataSnapshot.child("cuisine").getValue(String.class);
                     }
+                    List<String> directions = new ArrayList<>();
+                    if (dataSnapshot.child("directions").exists()) {
+                        GenericTypeIndicator<List<String>> timeListType = new GenericTypeIndicator<List<String>>() {
+                        };
+                        directions = dataSnapshot.child("directions").getValue(timeListType);
+                        Log.d("zxczcz", directions.toString() );
+
+                    }
+                    List<String> time = new ArrayList<>();
+                    if (dataSnapshot.child("time").exists()) {
+                        GenericTypeIndicator<List<String>> timeListType = new GenericTypeIndicator<List<String>>() {
+                        };
+                        time = dataSnapshot.child("time").getValue(timeListType);
+                    }
+                    List<String> nutritions = new ArrayList<>();
+                    if (dataSnapshot.child("nutritions").exists()) {
+                        GenericTypeIndicator<List<String>> timeListType = new GenericTypeIndicator<List<String>>() {
+                        };
+                        nutritions = dataSnapshot.child("nutritions").getValue(timeListType);
+                    }
+                    List<String> ingredients = new ArrayList<>();
+                    if (dataSnapshot.child("ingredients").exists()) {
+                        GenericTypeIndicator<List<String>> timeListType = new GenericTypeIndicator<List<String>>() {
+                        };
+                        ingredients = dataSnapshot.child("ingredients").getValue(timeListType);
+                    }
                     String imgUrl  = "";
                     if(dataSnapshot.child("imgUrl").exists()){
                       imgUrl =  dataSnapshot.child("imgUrl").getValue(String.class);
                     }
-                    mealDetailData = new MealDetailData(name,description,totalTime,rating,category,cuisine,imgUrl);
+                    mealDetailData = new MealDetailData(name,description,time,ingredients,directions,nutritions,rating,category,cuisine,imgUrl,totalTime);
                 }
                 mealLiveDetailData.postValue(mealDetailData);
             }
@@ -118,50 +145,7 @@ public class MealDetailResponsive implements MealDetailDataSource{
             }
         });
     }
-    @Override
-    public void loadMealDetailDirectionFromFirebase(int idMeal) {
-        if (mealDetailData == null) {
-            mealDetailData = new MealDetailData();
-        }
-        String stringIdMeal = idMeal+"";
-        DatabaseReference mealDetailRef = getMealDetailFromFirebase();
-        DatabaseReference dataRef = mealDetailRef.child(stringIdMeal);
-        dataRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    List directions  = new ArrayList<>();
-                    if(snapshot.child("directions").exists()){
-                        directions = snapshot.child("directions").getValue(List.class);
-                    }
-                    List<String> time  = new ArrayList<>();
-                    if(snapshot.child("time").exists()){
-                        time = snapshot.child("time").getValue(List.class);
-                    }
-                    List<String> nutritions  = new ArrayList<>();
-                    if(snapshot.child("nutritions").exists()){
-                        nutritions = snapshot.child("nutritions").getValue(List.class);
-                    }
-                    List<String> ingredients  = new ArrayList<>();
-                    if(snapshot.child("ingredients").exists()){
-                        ingredients =  snapshot.child("ingredients").getValue(List.class);
-                    }
-                    String imgUr  = "";
-                    if(snapshot.child("imgUr").exists()){
-                        imgUr =  snapshot.child("imgUr").getValue(String.class);
-                    }
 
-                    mealDetailData = new MealDetailData(time,ingredients,directions,nutritions,imgUr);
-                }
-                mealLiveDetailData.postValue(mealDetailData);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                mealLiveDetailData.postValue(null);
-            }
-        });
-    }
 
     public MutableLiveData<ArrayList<Comment>> getComment(String idMeal) {
         if (commentMeals == null) {

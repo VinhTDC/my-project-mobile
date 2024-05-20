@@ -62,7 +62,6 @@ public class MealDetailGeneralFragment extends Fragment {
         binding.getRoot().setTag(tagFragment);
         viewModel = new ViewModelProvider(requireActivity()).get(MealDetailViewModel.class);
         mealDetailResponsive = new MealDetailResponsive(getActivity().getApplication(), viewModel);
-
         imageViewWeakReference = new WeakReference<>(binding.imageView);
         fragment = new CommentFragment(viewModel);
         // Thêm CommentFragment vào FragmentContainerViews

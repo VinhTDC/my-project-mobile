@@ -36,16 +36,7 @@ public class MealDetailData {
     private String imgUrl;
     private String timeTotal;
 
-    public MealDetailData(String name,
-                          String description,
-                          List<String> time,
-                          List<String> ingredients,
-                          List<String> directions,
-                          List<String> nutritions,
-                          float rating,
-                          String category,
-                          String cuisine,
-                          String imgUrl) {
+    public MealDetailData(String name, String description, List<String> time, List<String> ingredients, List<String> directions, List<String> nutritions, float rating, String category, String cuisine, String imgUrl, String timeTotal) {
         this.name = name;
         this.description = description;
         this.time = time;
@@ -56,35 +47,10 @@ public class MealDetailData {
         this.category = category;
         this.cuisine = cuisine;
         this.imgUrl = imgUrl;
-    }
-    public MealDetailData(String name,
-                          String description,
-                          String timeTotal,
-                          float rating,
-                          String category,
-                          String cuisine,
-                          String imgUrl) {
-        this.name = name;
-        this.description = description;
         this.timeTotal = timeTotal;
-        this.rating = rating;
-        this.category = category;
-        this.cuisine = cuisine;
-        this.imgUrl = imgUrl;
     }
-    public MealDetailData(
-                          List<String> time,
-                          List<String> ingredients,
-                          List<String> directions,
-                          List<String> nutritions,
-                          String imgUrl) {
 
-        this.time = time;
-        this.ingredients = ingredients;
-        this.directions = directions;
-        this.nutritions = nutritions;
-        this.imgUrl = imgUrl;
-    }
+
 
     public MealDetailData(){
 
