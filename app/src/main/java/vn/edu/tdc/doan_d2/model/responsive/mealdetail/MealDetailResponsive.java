@@ -179,7 +179,11 @@ public class MealDetailResponsive implements MealDetailDataSource{
             commentMeals = new ArrayList<>();
         }
         DatabaseReference mealDetailRef = getCommentFromFirebase();
+
         DatabaseReference dataRef = mealDetailRef.child(idMeal);
+        String key = dataRef.getKey();
+        dataRef = dataRef.child(key);
+
         dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -222,7 +226,7 @@ public class MealDetailResponsive implements MealDetailDataSource{
 //        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         if (idMeal != null) {
-            commentsRef.child(idMeal).setValue(comment).addOnSuccessListener(aVoid -> {
+            commentsRef.child(idMeal).push().setValue(comment).addOnSuccessListener(aVoid -> {
                 Toast.makeText(application.getApplicationContext(), "Comment added successfully!", Toast.LENGTH_SHORT).show();
             }).addOnFailureListener(e -> {
                 // Xử lý lỗi khi gửi bình luận

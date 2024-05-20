@@ -143,7 +143,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
                         .into(fragmentMealItemBinding.imageMeal);
                 // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
                 FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference().child("categories/" + imageUrl);
+                StorageReference storageRef = storage.getReference().child("imgmeal/"+imageUrl);
 
                 // Kiểm tra xem tệp tồn tại trong Firebase Storage
                 storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

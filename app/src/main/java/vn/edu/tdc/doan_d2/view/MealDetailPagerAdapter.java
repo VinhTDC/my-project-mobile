@@ -35,5 +35,4 @@ public class MealDetailPagerAdapter extends FragmentStateAdapter {
     public int getItemCount() {
         return 2;
     }
-
 }

@@ -91,7 +91,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             app:chipSpacingHorizontal="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/nestedScrollView"
+            app:layout_constraintBottom_toTopOf="@+id/linearRecycler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/descriptionMeal">
@@ -102,36 +102,43 @@
                 android:layout_height="wrap_content"
                 app:layout_constrainedWidth="true"
                 android:text="Tag 1"
-                 />
+
+                android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
+                app:chipBackgroundColor="?attr/colorPrimary" />
+
+                 
+
             <com.google.android.material.chip.Chip
                 android:id="@+id/cuisine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constrainedWidth="true"
                 android:text="Tag 2"
-                />
+
+                android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
+                app:chipBackgroundColor="?attr/colorPrimary" />
+
+               
+
         </com.google.android.material.chip.ChipGroup>
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nestedScrollView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_layout"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/limearComment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chipGroup">
+            app:layout_constraintTop_toBottomOf="@+id/chipGroup"
+            app:layout_constraintVertical_bias="0.5">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/commentsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:nestedScrollingEnabled="true"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/comment_item" />
-        </androidx.core.widget.NestedScrollView>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragment_container_comment"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <LinearLayout
             android:id="@+id/limearComment"
@@ -142,7 +149,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nestedScrollView">
+            app:layout_constraintTop_toBottomOf="@+id/linearRecycler">
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -155,13 +162,11 @@
                 android:numStars="5"
                 android:rating="5" />
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:focusable="true">
+                android:layout_marginTop="16dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/commentInputLayout"
@@ -170,6 +175,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
+                    android:theme="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox.Dense"
                     android:layout_weight="1">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -177,9 +183,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Add a comment"
-                        android:inputType="text"
-                        app:layoutManager="" />
-
+                        android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -189,6 +193,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="Comment"
+                    android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
                     />
             </LinearLayout>
         </LinearLayout>

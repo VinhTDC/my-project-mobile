@@ -65,11 +65,10 @@ public class MealDetailViewModel extends AndroidViewModel {
         isLoading.postValue(true);
         MutableLiveData<List<Comment>> commentsLiveData = new MutableLiveData<>();
         idMeal.observe(lifecycleOwner, idMeal->{
-            Log.d("Mot123",idMeal);
             mealDetailResponsive.getComment(idMeal).observe(lifecycleOwner, commentMeal -> {
                 List<Comment> comments = new ArrayList<>();
                 if (commentMeal != null) { // Kiểm tra null
-                 comments = commentMeal;
+                 comments =commentMeal;
                 }
 
                 commentsLiveData.postValue(comments); // Cập nhật LiveData trên Main Thread

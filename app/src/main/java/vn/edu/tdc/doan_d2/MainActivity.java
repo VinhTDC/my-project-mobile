@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
     private CategoryViewModelRetrofit loadData;
     private static final String PREF_RETROFIT_RUN_FLAG = "retrofit_run_flag";
     private CategoryFragment fragment;
-    private MealFragment mealFragment;
     private String tagFragment = "CATEGORY_FRAGMENT_TAG";
     private SearchView searchView;
     private DrawerLayout drawerLayout;
