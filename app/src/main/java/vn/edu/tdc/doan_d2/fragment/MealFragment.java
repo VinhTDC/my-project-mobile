@@ -58,6 +58,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
     private static final int PAGE_SIZE = 50;
     private boolean isUpdatingAdapter = false;
 
+    private MutableLiveData<Integer> currentpageLive =  new MutableLiveData<>(currentPage);
 
     private CategoryFilter categoryFilter;
     private MutableLiveData<String> currentQueryLiveData = new MutableLiveData<>();
@@ -109,7 +110,10 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
             this.categoriesCount = total;
         });
         loadMealsForSearch();
-        loadMealsForPage(currentPage);
+        currentpageLive.observe(getViewLifecycleOwner(),page ->{
+            loadMealsForPage(page);
+        });
+
 
     }
 
@@ -241,7 +245,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
     }
 
     public void loadMealsForPage(int page) {
-        Log.d("CategoryFragment", "Failed to load categories for page " + page);
+        Log.d("CategoryFragment1232", "Failed to load categories for page " + page);
         viewModelCategory.loadMealsForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseCategory>>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -252,6 +256,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                     if (adapter == null) {
                         adapter = new MealAdapter(requireContext(), meals,MealFragment.this);
                         binding.recyclerViewMeal.setAdapter(adapter);
+                        currentpageLive.setValue(page);
                         adapter.notifyDataSetChanged();
                     } else {
                         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), meals));
@@ -297,5 +302,13 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
         intent.putExtra("mealId", meal.getId()+"");
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    public MutableLiveData<Integer> getCurrentpageLive() {
+        return currentpageLive;
+    }
+
+    public void setCurrentpageLive(int currentpageLive) {
+        this.currentpageLive.setValue(currentpageLive);
     }
 }

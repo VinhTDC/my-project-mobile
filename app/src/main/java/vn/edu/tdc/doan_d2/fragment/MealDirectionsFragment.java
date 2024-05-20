@@ -42,30 +42,31 @@ public class MealDirectionsFragment extends Fragment {
         viewModel.loadMealDetail(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<MealDetailData>() {
             @Override
             public void onChanged(MealDetailData mealDetailData) {
+                if (mealDetailData != null ) {
+                    StringBuilder stringDirection = new StringBuilder();
+                    for (int i = 0; i < mealDetailData.getDirections().size(); i++) {
+                        stringDirection.append(i + 1).append(". ").append(mealDetailData.getDirections().get(i)).append("\n");
+                    }
+                    binding.directText.setText(stringDirection.toString());
 
-                StringBuilder stringDirection = new StringBuilder();
-                for (int i = 0; i < mealDetailData.getDirections().size(); i++) {
-                    stringDirection.append(i + 1).append(". ").append(mealDetailData.getDirections().get(i)).append("\n");
-                }
-                binding.directText.setText(stringDirection.toString());
+                    StringBuilder stringIngre = new StringBuilder();
+                    for (int i = 0; i < mealDetailData.getIngredients().size(); i++) {
+                        stringIngre.append(i + 1).append(". ").append(mealDetailData.getIngredients().get(i)).append("\n");
+                    }
+                    binding.ingreText.setText(stringIngre.toString());
 
-                StringBuilder stringIngre = new StringBuilder();
-                for (int i = 0; i < mealDetailData.getIngredients().size(); i++) {
-                    stringIngre.append(i + 1).append(". ").append(mealDetailData.getIngredients().get(i)).append("\n");
-                }
-                binding.ingreText.setText(stringIngre.toString());
+                    StringBuilder stringTime = new StringBuilder();
+                    for (int i = 0; i < mealDetailData.getTime().size(); i++) {
+                        stringTime.append(i + 1).append(". ").append(mealDetailData.getTime().get(i)).append("\n");
+                    }
+                    binding.timeText.setText(stringTime.toString());
 
-                StringBuilder stringTime = new StringBuilder();
-                for (int i = 0; i < mealDetailData.getTime().size(); i++) {
-                    stringTime.append(i + 1).append(". ").append(mealDetailData.getTime().get(i)).append("\n");
+                    StringBuilder stringNutrition = new StringBuilder();
+                    for (int i = 0; i < mealDetailData.getNutritions().size(); i++) {
+                        stringNutrition.append(i + 1).append(". ").append(mealDetailData.getNutritions().get(i)).append("\n");
+                    }
+                    binding.nutriText.setText(stringNutrition.toString());
                 }
-                binding.timeText.setText(stringTime.toString());
-
-                StringBuilder stringNutrition = new StringBuilder();
-                for (int i = 0; i < mealDetailData.getNutritions().size(); i++) {
-                    stringNutrition.append(i + 1).append(". ").append(mealDetailData.getNutritions().get(i)).append("\n");
-                }
-                binding.nutriText.setText(stringNutrition.toString());
             }
         });
     }
