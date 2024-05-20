@@ -12,10 +12,14 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -30,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vn.edu.tdc.doan_d2.R;
+import vn.edu.tdc.doan_d2.databinding.FragmentCommentBinding;
 import vn.edu.tdc.doan_d2.databinding.RecipeMealDetailLayoutBinding;
 import vn.edu.tdc.doan_d2.model.comment.Comment;
 import vn.edu.tdc.doan_d2.model.comment.CommentDiffCallback;
@@ -41,6 +46,7 @@ import vn.edu.tdc.doan_d2.viewmodel.mealdetail.MealDetailViewModel;
 
 public class MealDetailGeneralFragment extends Fragment {
     private RecipeMealDetailLayoutBinding binding;
+    private CommentFragment  fragment;
     private String tagFragment = "RECIPE_FRAGMENT_TAG";
 
     private MutableLiveData<MealDetailData> mealDetailDataMutableLiveData;
@@ -48,7 +54,9 @@ public class MealDetailGeneralFragment extends Fragment {
     private WeakReference<ImageView> imageViewWeakReference;
     private CommentAdapter adapter;
     private MealDetailResponsive mealDetailResponsive;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
+    private final String tagFragmnetCommnet = "FRAGMNET_COMMENT";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,15 +64,29 @@ public class MealDetailGeneralFragment extends Fragment {
         binding.getRoot().setTag(tagFragment);
         viewModel = new ViewModelProvider(requireActivity()).get(MealDetailViewModel.class);
         mealDetailResponsive = new MealDetailResponsive(getActivity().getApplication(), viewModel);
+
         imageViewWeakReference = new WeakReference<>(binding.imageView);
+        fragment = new CommentFragment(viewModel);
+        // Thêm CommentFragment vào FragmentContainerViews
+        swipeRefreshLayout = binding.swipeLayout;
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container_comment,fragment,tagFragmnetCommnet);
+        transaction.commit();
+
         return binding.getRoot();
     }
-
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupData();
+        adapter = new CommentAdapter(getContext(),fragment.getData());
         binding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +101,6 @@ public class MealDetailGeneralFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     });
                     binding.commentEditText.setText(""); // Xóa nội dung EditText
-
                 }
             }
         });
@@ -96,26 +117,7 @@ public class MealDetailGeneralFragment extends Fragment {
                 binding.category.setText(mealDetailData.getCategory());
                 binding.cuisine.setText(mealDetailData.getCuisine());
                 binding.totalTime.setText(mealDetailData.getTimeTotal());
-                // set adapter cho recycleview
-                viewModel.loadCommnet(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<List<Comment>>() {
-                    @Override
-                    public void onChanged(List<Comment> comments) {
-                        if (comments != null) {
-                            if (adapter == null) {
-                                adapter = new CommentAdapter(requireContext(), comments);
-                                binding.commentsRecyclerView.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
-                            } else {
-                                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CommentDiffCallback((ArrayList<Comment>) adapter.getData(), (ArrayList<Comment>) comments));
-                                adapter.setData(comments);
-                                diffResult.dispatchUpdatesTo(adapter);
-                                adapter.notifyDataSetChanged();
-                            }
 
-                        }
-
-                    }
-                });
 
             }
         });
@@ -132,7 +134,7 @@ public class MealDetailGeneralFragment extends Fragment {
                     .into(binding.imageView);
             // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
             FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference().child("categories/" + imageUrl);
+            StorageReference storageRef = storage.getReference().child(imageUrl);
 
             // Kiểm tra xem tệp tồn tại trong Firebase Storage
             storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -185,5 +187,6 @@ public class MealDetailGeneralFragment extends Fragment {
             Glide.with(binding.imageView.getContext()).resumeRequests();
         }
     }
+
 }
 

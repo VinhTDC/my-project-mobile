@@ -23,6 +23,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
         this.context = context;
         this.data = data;
     }
+    public CommentAdapter(Context context) {
+        this.context = context;
+
+    }
 
     @NonNull
     @Override

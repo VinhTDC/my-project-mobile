@@ -1,5 +1,6 @@
 package vn.edu.tdc.doan_d2.viewmodel.mealdetail;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.util.Log;
 
@@ -59,16 +60,15 @@ public class MealDetailViewModel extends AndroidViewModel {
     public LiveData<List<Comment>> getCommentsLiveData() {
         return commentsLiveData;
     }
+    @SuppressLint("SuspiciousIndentation")
     public MutableLiveData<List<Comment>> loadCommnet (LifecycleOwner lifecycleOwner) {
         isLoading.postValue(true);
         MutableLiveData<List<Comment>> commentsLiveData = new MutableLiveData<>();
         idMeal.observe(lifecycleOwner, idMeal->{
-            Log.d("Mot123",idMeal);
             mealDetailResponsive.getComment(idMeal).observe(lifecycleOwner, commentMeal -> {
                 List<Comment> comments = new ArrayList<>();
                 if (commentMeal != null) { // Kiểm tra null
                  comments =commentMeal;
-                    Log.d("Mot123",comments+"");
                 }
 
                 commentsLiveData.postValue(comments); // Cập nhật LiveData trên Main Thread

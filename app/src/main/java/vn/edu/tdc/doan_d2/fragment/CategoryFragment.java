@@ -48,9 +48,8 @@ import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
 
 public class CategoryFragment extends Fragment implements PaginationInterface, OnCategoryClickListener {
     private FragmentCategoryBinding binding;
-    private MealFragment mealFragment;
     private SearchView searchView;
-    private ActivityMainBinding bindingMain;
+
     CategoryViewModelRetrofit categoryViewModelRetrofit;
 
     private CategoryViewModel viewModelCategory;
@@ -65,8 +64,6 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
     private boolean isLoading = true;
     private static final int PAGE_SIZE = 50;
     private boolean isUpdatingAdapter = false;
-
-    private CategoryFilter categoryFilter;
     private MutableLiveData<String> currentQueryLiveData = new MutableLiveData<>();
 
 
