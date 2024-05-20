@@ -34,7 +34,6 @@ android:theme="@style/Base.Theme.DoAn_DĐ2"
 
             android:name=".MealDetailActivity"
             android:exported="false" />
-
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />

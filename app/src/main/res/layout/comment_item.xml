@@ -1,26 +1,19 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
-    xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/AppTheme">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:padding="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="12dp"
-        app:strokeColor="?attr/colorPrimary"
-        app:strokeWidth="1dp">
-
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:orientation="horizontal"
-            android:padding="16dp" >
+            android:padding="16dp">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/userAvatarImageView"
@@ -29,80 +22,87 @@
                 app:shapeAppearanceOverlay="@style/CustomShapeAppearanceOverlay"
                 tools:src="@tools:sample/avatars" />
 
-
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/userNameTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="User Name"
+                        android:textAppearance="?attr/textAppearanceSubtitle1"
+                        android:textColor="?attr/colorPrimary"
+                        android:textStyle="bold" />
+
+                    <RatingBar
+                        android:id="@+id/userRatingBar"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:isIndicator="true"
+                        tools:rating="4" />
+
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/userNameTextView"
-                    android:layout_width="0dp"
+                    android:id="@+id/commentContentTextView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="User Name"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="?attr/colorPrimary"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="8dp"
+                    android:text="Comment content"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="?android:attr/textColorSecondary" />
 
-                <RatingBar
-                    android:id="@+id/userRatingBar"
-                    style="?android:attr/ratingBarStyleSmall"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:isIndicator="true"
-                    tools:rating="4" />
+                    android:layout_marginTop="8dp"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/replyButton"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reply"
+                        android:textColor="?attr/colorPrimary"
+                        app:icon="@drawable/img"
+                        app:iconGravity="textStart"
+                        app:iconPadding="4dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/likeButton"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Like"
+                        android:textColor="?attr/colorPrimary"
+                        app:icon="@drawable/img"
+                        app:iconGravity="textStart"
+                        app:iconPadding="4dp"
+                        app:strokeColor="?attr/colorPrimary" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/commentContentTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Comment content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="end"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/replyButton"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reply"
-                    android:textColor="?attr/colorPrimary"
-                    android:textSize="14sp"
-                    app:icon="@drawable/img"
-                    app:iconGravity="textStart"
-                    app:iconPadding="4dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/likeButton"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Like"
-                    android:textColor="?attr/colorPrimary"
-                    android:textSize="14sp"
-                    app:icon="@drawable/img"
-                    app:iconGravity="textStart"
-                    app:iconPadding="4dp"
-                    app:strokeColor="?attr/colorPrimary"
-                    app:strokeWidth="1dp" />
-
-            </LinearLayout>
         </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+
+    </com.google.android.material.card.MaterialCardView>
+
 </layout>
