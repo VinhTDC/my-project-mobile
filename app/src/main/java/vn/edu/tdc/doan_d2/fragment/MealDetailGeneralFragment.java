@@ -49,13 +49,11 @@ public class MealDetailGeneralFragment extends Fragment {
     private CommentFragment  fragment;
     private String tagFragment = "RECIPE_FRAGMENT_TAG";
 
-    private MutableLiveData<MealDetailData> mealDetailDataMutableLiveData;
     private MealDetailViewModel viewModel;
     private WeakReference<ImageView> imageViewWeakReference;
     private CommentAdapter adapter;
     private MealDetailResponsive mealDetailResponsive;
     private SwipeRefreshLayout swipeRefreshLayout;
-
     private final String tagFragmnetCommnet = "FRAGMNET_COMMENT";
     @Nullable
     @Override
