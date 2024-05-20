@@ -101,12 +101,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tag 1"
+                android:theme="@style/AppTheme"
                 app:chipBackgroundColor="?attr/colorPrimary" />
             <com.google.android.material.chip.Chip
                 android:id="@+id/cuisine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tag 2"
+                android:theme="@style/AppTheme"
                 app:chipBackgroundColor="?attr/colorPrimary" />
         </com.google.android.material.chip.ChipGroup>
 
@@ -168,6 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
+                    android:theme="@style/AppTheme"
                     android:layout_weight="1">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -187,6 +190,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="Comment"
+                    android:theme="@style/AppTheme"
                     />
             </LinearLayout>
         </LinearLayout>
