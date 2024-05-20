@@ -52,7 +52,13 @@ dependencies {
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
+<<<<<<< HEAD
     implementation ("com.google.android.material:material:1.12.0")
+=======
+
+    implementation("com.google.firebase:firebase-auth:23.0.0")
+
+>>>>>>> origin/login
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.12.0")
