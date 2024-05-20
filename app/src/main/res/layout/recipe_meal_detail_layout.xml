@@ -100,16 +100,26 @@
                 android:id="@+id/category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constrainedWidth="true"
                 android:text="Tag 1"
+
                 android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
                 app:chipBackgroundColor="?attr/colorPrimary" />
+
+                 
+
             <com.google.android.material.chip.Chip
                 android:id="@+id/cuisine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constrainedWidth="true"
                 android:text="Tag 2"
+
                 android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
                 app:chipBackgroundColor="?attr/colorPrimary" />
+
+               
+
         </com.google.android.material.chip.ChipGroup>
 
 
