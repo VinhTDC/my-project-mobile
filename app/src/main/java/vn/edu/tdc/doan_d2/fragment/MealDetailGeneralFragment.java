@@ -44,6 +44,7 @@ import vn.edu.tdc.doan_d2.databinding.FragmentCommentBinding;
 import vn.edu.tdc.doan_d2.databinding.RecipeMealDetailLayoutBinding;
 import vn.edu.tdc.doan_d2.model.comment.Comment;
 import vn.edu.tdc.doan_d2.model.comment.CommentDiffCallback;
+import vn.edu.tdc.doan_d2.model.comment.Rating;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
 import vn.edu.tdc.doan_d2.model.responsive.mealdetail.MealDetailResponsive;
 import vn.edu.tdc.doan_d2.view.CommentAdapter;
@@ -103,7 +104,14 @@ public class MealDetailGeneralFragment extends Fragment {
                         Comment comment = new Comment(idMeal, commentText, "Vinh", rating);
                         mealDetailResponsive.sendCommentToFirebase(comment, idMeal);
                         idMealC = idMeal;
-                        adapter.notifyDataSetChanged();
+                        mealDetailResponsive.getComment(idMeal).observe(getViewLifecycleOwner(), commentList -> {
+                            // Cập nhật dữ liệu trong adapter
+                            adapter.setData(commentList);
+                            adapter.notifyDataSetChanged();
+
+                            // Cập nhật danh sách bình luận trong CommentFragment
+                            fragment.updateCommnetList(commentList);
+                        });
                     });
                     binding.commentEditText.setText(""); // Xóa nội dung EditText
                 }
@@ -121,6 +129,12 @@ public class MealDetailGeneralFragment extends Fragment {
                 binding.category.setText(mealDetailData.getCategory());
                 binding.cuisine.setText(mealDetailData.getCuisine());
                 binding.totalTime.setText(mealDetailData.getTimeTotal());
+                viewModel.loadRating(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<Rating>() {
+                    @Override
+                    public void onChanged(Rating rating) {
+                        binding.displayRatingBar.setRating(rating.getRating());
+                    }
+                });
                 
             }
         });

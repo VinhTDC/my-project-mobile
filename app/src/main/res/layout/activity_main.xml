@@ -6,7 +6,8 @@
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -21,8 +22,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.5"
-                android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar">
+                app:layout_constraintVertical_bias="0.5">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -58,7 +58,8 @@
                     android:id="@+id/fragmentContainer"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:background="@drawable/bg"/>
+                    android:background="@drawable/bg"
+                    />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <LinearLayout
@@ -82,13 +83,6 @@
                     android:layout_weight="2"
                     android:text="@string/btnPre" />
 
-                <Button
-                    android:id="@+id/buttonEnd"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:layout_weight="2"
-                    android:text="End" />
 
                 <Button
                     android:id="@+id/buttonNext"

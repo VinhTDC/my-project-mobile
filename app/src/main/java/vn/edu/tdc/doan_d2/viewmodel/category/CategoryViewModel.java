@@ -47,8 +47,6 @@ public class CategoryViewModel extends AndroidViewModel {
                 if (allCategories != null) { // Kiểm tra null
                     int startIndex = page * pageSize;
                     int endIndex = Math.min(startIndex + pageSize, allCategories.size());
-                    Log.d("startIndex", startIndex+"");
-                    Log.d("startIndex", endIndex+"");
                     if (startIndex >= endIndex) {
                         pageData.postValue(new ArrayList<>()); // Trả về danh sách rỗng cho pageData
                     } else {
