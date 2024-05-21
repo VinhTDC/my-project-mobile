@@ -14,5 +14,6 @@ public interface MealDetailDataSource {
     DatabaseReference getMealDetailFromFirebase();
 
     void loadMealDetailGeneralFromFirebase(String idMeal);
-    void loadMealDetailDirectionFromFirebase(int idMeal);
+
+
 }

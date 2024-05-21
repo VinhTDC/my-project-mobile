@@ -7,22 +7,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.comment.Comment;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
 import vn.edu.tdc.doan_d2.model.responsive.mealdetail.MealDetailResponsive;
@@ -32,7 +24,8 @@ public class MealDetailViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private MutableLiveData<MealDetailData> mealData;
     private MutableLiveData<List<Comment>> commentsLiveData = new MutableLiveData<>();
-
+    private  float rating = 0;
+    private MutableLiveData<Float> ratting  = new MutableLiveData<>(rating);
     private MutableLiveData<String> idMeal = new MutableLiveData<>();
     public MealDetailViewModel(@NonNull Application application) {
         super(application);
@@ -49,7 +42,6 @@ public class MealDetailViewModel extends AndroidViewModel {
                 if (mealDetail != null) { // Kiểm tra null
                    mealDetailData = mealDetail;
                 }
-
                 mealData.postValue(mealDetailData); // Cập nhật LiveData trên Main Thread
                 isLoading.postValue(false); // Kết thúc tải
             });
@@ -57,9 +49,8 @@ public class MealDetailViewModel extends AndroidViewModel {
         });
         return mealData;
     }
-    public LiveData<List<Comment>> getCommentsLiveData() {
-        return commentsLiveData;
-    }
+
+
     @SuppressLint("SuspiciousIndentation")
     public MutableLiveData<List<Comment>> loadCommnet (LifecycleOwner lifecycleOwner) {
         isLoading.postValue(true);
@@ -68,9 +59,17 @@ public class MealDetailViewModel extends AndroidViewModel {
             mealDetailResponsive.getComment(idMeal).observe(lifecycleOwner, commentMeal -> {
                 List<Comment> comments = new ArrayList<>();
                 if (commentMeal != null) { // Kiểm tra null
-                 comments =commentMeal;
+                    comments = commentMeal;
                 }
-
+                float totalRating = 0;
+                for (Comment cmt : comments){
+                    totalRating  += cmt.getRating();
+                }
+                totalRating = totalRating/comments.size();
+                ratting.setValue(totalRating);
+                Log.d("Gettoalt", ratting.getValue()+"");
+                DatabaseReference mealsRef = FirebaseDatabase.getInstance().getReference("Rating/"+idMeal);
+                mealsRef.child(idMeal).child("rating").setValue(totalRating); // Lưu dưới dạng số thực (float)
                 commentsLiveData.postValue(comments); // Cập nhật LiveData trên Main Thread
                 isLoading.postValue(false); // Kết thúc tải
             });
@@ -85,5 +84,13 @@ public class MealDetailViewModel extends AndroidViewModel {
 
     public void setIdMeal(String idMeal) {
         this.idMeal.setValue(idMeal);
+    }
+
+    public MutableLiveData<Float> getRatting() {
+        return ratting;
+    }
+
+    public void setRatting(float  ratting) {
+        this.ratting.setValue(ratting);
     }
 }

@@ -150,6 +150,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
                 BaseCategory item = dataProvider.getItem(position);
                 if (position != RecyclerView.NO_POSITION && listener != null && item != null) {
                     listener.onCategoryClick(item);
+                    Log.d("item" , item.getName());
                 }
             });
         }

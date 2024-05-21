@@ -52,9 +52,9 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     public MutableLiveData<ArrayList<BaseCategory>> getAllCategories(boolean isCategory) {
         if (categoriesData == null) {
             loadCategoriesFromFirebase(isCategory);
+            Log.d("Firebase1111111111111111", "Data snapshot is empty");
         } else if (categoriesData != null && !isDataLoaded) {
             Log.d("Firebase", "Data snapshot is empty");
-
             isDataLoaded = true;
             categoriesLiveData.postValue(categoriesData);
         }
@@ -63,6 +63,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
 
     public MutableLiveData<ArrayList<BaseCategory>> getAllMeals(String nameCategory) {
         if (mealsData == null) {
+            Log.d("kiemtra", nameCategory);
             loadMealFromFirebase(nameCategory);
         } else if (mealsData != null && !isDataLoaded) {
             isDataLoaded = true;
@@ -76,6 +77,7 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
         if (categoriesData == null) {
             categoriesData = new ArrayList<>();
         }
+
         DatabaseReference categoryRef = getCategoriesFromFirebase();
 
         // Reference đến node con cụ thể dựa trên isCategory

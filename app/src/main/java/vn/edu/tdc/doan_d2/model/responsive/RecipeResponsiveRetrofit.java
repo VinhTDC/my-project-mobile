@@ -30,6 +30,7 @@ import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.model.meal.MealResponse;
 import vn.edu.tdc.doan_d2.model.meal.Meals;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
+import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailDataT;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailResponse;
 import vn.edu.tdc.doan_d2.model.mealdetail.Recipe;
 import vn.edu.tdc.doan_d2.serviceapi.MealApiService;
@@ -42,7 +43,7 @@ import vn.edu.tdc.doan_d2.serviceapi.RetrofitInstance;
 public class RecipeResponsiveRetrofit {
     private final MutableLiveData<ArrayList<String>> dataMutableLiveDataRetrofit = new MutableLiveData<ArrayList<String>>();
     private final MutableLiveData<ArrayList<Meal>> dataMealLiveDataRetrofit = new MutableLiveData<ArrayList<Meal>>();
-    private final MutableLiveData<MealDetailData> mealDetailDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MealDetailDataT> mealDetailDataMutableLiveData = new MutableLiveData<>();
 
     private Categories categories;
     private Meals meals;
@@ -50,7 +51,7 @@ public class RecipeResponsiveRetrofit {
     private Cuisines cuisines;
     private ArrayList<String> data = new ArrayList<>();
     private ArrayList<Meal> dataMeal = new ArrayList<>();
-    private MealDetailData dataMealDetail = new MealDetailData();
+    private MealDetailDataT dataMealDetailT = new MealDetailDataT();
 
     private final Application application;
     private static final String PREF_RETROFIT_RUN_COUNT = "retrofit_run_count";
@@ -63,11 +64,11 @@ public class RecipeResponsiveRetrofit {
     public MutableLiveData<ArrayList<String>> getDataMutableLiveDataRetrofit(boolean isCategory) {
         int runCount = getRetrofitRunCount();
 
-        if (runCount < 4) { // Kiểm tra số lần chạy
+        if (runCount < 2) { // Kiểm tra số lần chạy
             incrementRetrofitRunCount(); // Tăng biến đếm
             if (isCategory) {
                 RecipeCategoryApiService recipeCategoryApiService = RetrofitInstance.getServiceCategory();
-                Call<CategoryResponse> call = recipeCategoryApiService.getRecipeCategory(application.getApplicationContext().getString(R.string.api_key));
+                Call<CategoryResponse> call = recipeCategoryApiService.getRecipeCategory(application.getApplicationContext().getString(R.string.api_key2));
                 call.enqueue(new Callback<CategoryResponse>() {
                     @Override
                     public void onResponse(Call<CategoryResponse> call, Response<CategoryResponse> response) {
@@ -82,7 +83,6 @@ public class RecipeResponsiveRetrofit {
                                 Category category = new Category();
                                 String name = categoryName;
                                 if (categoryName != null) {
-                                    name = name.toLowerCase().replace("!", "");
                                     category.setName(name);
                                 } else {
                                     category.setName("Loading");
@@ -132,7 +132,6 @@ public class RecipeResponsiveRetrofit {
                             Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
                         }
                     }
-
                     @Override
                     public void onFailure(Call<CuisineResponse> call, Throwable t) {
 
@@ -148,7 +147,7 @@ public class RecipeResponsiveRetrofit {
     public MutableLiveData<ArrayList<Meal>> getDataMutableLiveDataRetrofit(String nameCategory) {
         int runCount = getRetrofitRunCount();
         Log.d("runCount",runCount+"");
-        if (runCount < 100) { // Kiểm tra số lần chạy
+        if (runCount < 1000) { // Kiểm tra số lần chạy
             incrementRetrofitRunCount(); // Tăng biến đếm
             MealApiService recipeMealApiService = RetrofitInstance.getServiceMeal();
             Call<MealResponse> call = recipeMealApiService.getRecipeMeal(nameCategory, application.getApplicationContext().getString(R.string.api_key1));
@@ -178,7 +177,7 @@ public class RecipeResponsiveRetrofit {
         }
         return dataMealLiveDataRetrofit;
     }
-    public MutableLiveData<MealDetailData> getDataMealDetailMutableLiveDataRetrofit(int idMeal) {
+    public MutableLiveData<MealDetailDataT> getDataMealDetailMutableLiveDataRetrofit(int idMeal) {
 
         int runCount = getRetrofitRunCount();
         Log.d("runCount",runCount+"");
@@ -186,19 +185,18 @@ public class RecipeResponsiveRetrofit {
 
             incrementRetrofitRunCount(); // Tăng biến đếm
             MealDetailService recipeMealApiService = RetrofitInstance.getServiceMealDetail();
-            Call<MealDetailResponse> call = recipeMealApiService.getRecipeMealDetail(idMeal, application.getApplicationContext().getString(R.string.api_key));
+            Call<MealDetailResponse> call = recipeMealApiService.getRecipeMealDetail(idMeal, application.getApplicationContext().getString(R.string.api_key1));
             call.enqueue(new Callback<MealDetailResponse>() {
                 @Override
                 public void onResponse(Call<MealDetailResponse> call, Response<MealDetailResponse> response) {
                     MealDetailResponse recipeMeal = response.body();
                     if (recipeMeal != null && recipeMeal.getRecipe() != null) {
                         mealDetails = recipeMeal.getRecipe();
-                        dataMealDetail = mealDetails.getData();
-                        Log.d("dataMealDetail",dataMealDetail.toString()+"" );
-                        mealDetailDataMutableLiveData.postValue(dataMealDetail);
-                        dataMealDetail.setImgUrl(uploadImageToFirebaseStorage(dataMealDetail.getName()));
-                        saveMealDetailToFirebase(dataMealDetail, idMeal);
-
+                        dataMealDetailT = mealDetails.getData();
+                        Log.d("dataMealDetail",dataMealDetailT.toString()+"" );
+                        mealDetailDataMutableLiveData.postValue(dataMealDetailT);
+                        dataMealDetailT.setImgUrl(uploadImageToFirebaseStorage(dataMealDetailT.getName()));
+                         saveMealDetailToFirebase(dataMealDetailT, idMeal);
                         // Duyệt qua danh sách tên category lấy từ Retrofit
                     } else {
                         Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
@@ -280,10 +278,11 @@ public class RecipeResponsiveRetrofit {
         editor.apply();
     }
 
-    private void saveMealDetailToFirebase(MealDetailData mealDetail, int idMeal) {
+    private void saveMealDetailToFirebase(MealDetailDataT mealDetail, int idMeal) {
         String stringIdMeal  = idMeal+"";
+//        mealDetail.setRating(0);
         DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + stringIdMeal);
-        // Tạo key tự động cho mỗi category
+        // Tạo key tự động cho mỗi meal
         if(idMeal != 0){
             mealDetailRef.child(stringIdMeal).setValue(mealDetail);
         } else {
