@@ -30,6 +30,7 @@ import vn.edu.tdc.doan_d2.model.meal.Meal;
 import vn.edu.tdc.doan_d2.model.meal.MealResponse;
 import vn.edu.tdc.doan_d2.model.meal.Meals;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
+import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailDataT;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailResponse;
 import vn.edu.tdc.doan_d2.model.mealdetail.Recipe;
 import vn.edu.tdc.doan_d2.serviceapi.MealApiService;
@@ -42,7 +43,7 @@ import vn.edu.tdc.doan_d2.serviceapi.RetrofitInstance;
 public class RecipeResponsiveRetrofit {
     private final MutableLiveData<ArrayList<String>> dataMutableLiveDataRetrofit = new MutableLiveData<ArrayList<String>>();
     private final MutableLiveData<ArrayList<Meal>> dataMealLiveDataRetrofit = new MutableLiveData<ArrayList<Meal>>();
-    private final MutableLiveData<MealDetailData> mealDetailDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MealDetailDataT> mealDetailDataMutableLiveData = new MutableLiveData<>();
 
     private Categories categories;
     private Meals meals;
@@ -50,7 +51,7 @@ public class RecipeResponsiveRetrofit {
     private Cuisines cuisines;
     private ArrayList<String> data = new ArrayList<>();
     private ArrayList<Meal> dataMeal = new ArrayList<>();
-    private MealDetailData dataMealDetail = new MealDetailData();
+    private MealDetailDataT dataMealDetailT = new MealDetailDataT();
 
     private final Application application;
     private static final String PREF_RETROFIT_RUN_COUNT = "retrofit_run_count";
@@ -176,7 +177,7 @@ public class RecipeResponsiveRetrofit {
         }
         return dataMealLiveDataRetrofit;
     }
-    public MutableLiveData<MealDetailData> getDataMealDetailMutableLiveDataRetrofit(int idMeal) {
+    public MutableLiveData<MealDetailDataT> getDataMealDetailMutableLiveDataRetrofit(int idMeal) {
 
         int runCount = getRetrofitRunCount();
         Log.d("runCount",runCount+"");
@@ -191,12 +192,11 @@ public class RecipeResponsiveRetrofit {
                     MealDetailResponse recipeMeal = response.body();
                     if (recipeMeal != null && recipeMeal.getRecipe() != null) {
                         mealDetails = recipeMeal.getRecipe();
-                        dataMealDetail = mealDetails.getData();
-                        Log.d("dataMealDetail",dataMealDetail.toString()+"" );
-                        mealDetailDataMutableLiveData.postValue(dataMealDetail);
-                        dataMealDetail.setImgUrl(uploadImageToFirebaseStorage(dataMealDetail.getName()));
-                        saveMealDetailToFirebase(dataMealDetail, idMeal);
-
+                        dataMealDetailT = mealDetails.getData();
+                        Log.d("dataMealDetail",dataMealDetailT.toString()+"" );
+                        mealDetailDataMutableLiveData.postValue(dataMealDetailT);
+                        dataMealDetailT.setImgUrl(uploadImageToFirebaseStorage(dataMealDetailT.getName()));
+                         saveMealDetailToFirebase(dataMealDetailT, idMeal);
                         // Duyệt qua danh sách tên category lấy từ Retrofit
                     } else {
                         Log.e("API_Response", "Failed to get data from API. Error code: " + response.code());
@@ -278,9 +278,9 @@ public class RecipeResponsiveRetrofit {
         editor.apply();
     }
 
-    private void saveMealDetailToFirebase(MealDetailData mealDetail, int idMeal) {
+    private void saveMealDetailToFirebase(MealDetailDataT mealDetail, int idMeal) {
         String stringIdMeal  = idMeal+"";
-        mealDetail.setRating(0);
+//        mealDetail.setRating(0);
         DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + stringIdMeal);
         // Tạo key tự động cho mỗi meal
         if(idMeal != 0){

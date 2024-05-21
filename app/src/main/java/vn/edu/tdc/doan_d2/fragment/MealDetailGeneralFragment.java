@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -25,6 +26,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
@@ -55,6 +61,7 @@ public class MealDetailGeneralFragment extends Fragment {
     private MealDetailResponsive mealDetailResponsive;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final String tagFragmnetCommnet = "FRAGMNET_COMMENT";
+    private String idMealC;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -95,6 +102,7 @@ public class MealDetailGeneralFragment extends Fragment {
                     viewModel.getIdMeal().observe(getViewLifecycleOwner(), idMeal -> {
                         Comment comment = new Comment(idMeal, commentText, "Vinh", rating);
                         mealDetailResponsive.sendCommentToFirebase(comment, idMeal);
+                        idMealC = idMeal;
                         adapter.notifyDataSetChanged();
                     });
                     binding.commentEditText.setText(""); // Xóa nội dung EditText
@@ -108,14 +116,12 @@ public class MealDetailGeneralFragment extends Fragment {
             @Override
             public void onChanged(MealDetailData mealDetailData) {
                 binding.nameMeal.setText(mealDetailData.getName());
-                binding.displayRatingBar.setRating(mealDetailData.getRating());
                 binding.descriptionMeal.setText(mealDetailData.getDescription());
                 loadImageFromFirebase(mealDetailData.getImgUrl());
                 binding.category.setText(mealDetailData.getCategory());
                 binding.cuisine.setText(mealDetailData.getCuisine());
                 binding.totalTime.setText(mealDetailData.getTimeTotal());
-
-
+                
             }
         });
     }
@@ -184,6 +190,7 @@ public class MealDetailGeneralFragment extends Fragment {
             Glide.with(binding.imageView.getContext()).resumeRequests();
         }
     }
+
 
 }
 

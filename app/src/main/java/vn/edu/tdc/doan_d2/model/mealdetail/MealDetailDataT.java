@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MealDetailData {
+public class MealDetailDataT {
     @SerializedName("Name")
     @Expose
     private String name;
@@ -24,8 +24,6 @@ public class MealDetailData {
     @SerializedName("Nutritions")
     @Expose
     private List<String> nutritions;
-    @Expose(serialize = false, deserialize = false)
-    private float rating;
     @SerializedName("Category")
     @Expose
     private String category;
@@ -35,26 +33,14 @@ public class MealDetailData {
     private String imgUrl;
     private String timeTotal;
 
-    public MealDetailData(String name, String description, List<String> time, List<String> ingredients, List<String> directions, List<String> nutritions, float rating, String category, String cuisine, String imgUrl, String timeTotal) {
+    public MealDetailDataT(String name, String description, List<String> time, List<String> ingredients, List<String> directions, List<String> nutritions, String category, String cuisine, String imgUrl, String timeTotal) {
         this.name = name;
         this.description = description;
         this.time = time;
         this.ingredients = ingredients;
         this.directions = directions;
         this.nutritions = nutritions;
-        this.rating = rating;
-        this.category = category;
-        this.cuisine = cuisine;
-        this.imgUrl = imgUrl;
-        this.timeTotal = timeTotal;
-    }
-    public MealDetailData(String name, String description, List<String> time, List<String> ingredients, List<String> directions, List<String> nutritions, String category, String cuisine, String imgUrl, String timeTotal) {
-        this.name = name;
-        this.description = description;
-        this.time = time;
-        this.ingredients = ingredients;
-        this.directions = directions;
-        this.nutritions = nutritions;
+
         this.category = category;
         this.cuisine = cuisine;
         this.imgUrl = imgUrl;
@@ -63,7 +49,7 @@ public class MealDetailData {
 
 
 
-    public MealDetailData(){
+    public MealDetailDataT(){
 
     }
 
@@ -115,13 +101,7 @@ public class MealDetailData {
         this.nutritions = nutritions;
     }
 
-    public float getRating() {
-        return rating;
-    }
 
-    public void setRating(float rating) {
-        this.rating = rating;
-    }
 
     public String getCategory() {
         return category;

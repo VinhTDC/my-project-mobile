@@ -34,6 +34,8 @@ public class MealDetailActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra("mealId")) {
             String idMeal = intent.getStringExtra("mealId");
             viewModel.setIdMeal(idMeal);
+
+
             Log.d("idMeal",viewModel.getIdMeal().getValue()+"");
         }
 

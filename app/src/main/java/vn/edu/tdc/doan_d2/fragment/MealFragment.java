@@ -38,16 +38,18 @@ import vn.edu.tdc.doan_d2.model.responsive.category.CategoryFilter;
 import vn.edu.tdc.doan_d2.view.MealAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
+import vn.edu.tdc.doan_d2.viewmodel.mealdetail.MealDetailViewModel;
 
 
 public class MealFragment extends Fragment implements PaginationInterface,OnMealClickListener {
     private FragmentMealListBinding binding;
 
     private SearchView searchView;
-    private ActivityMainBinding bindingMain;
+
     CategoryViewModelRetrofit categoryViewModelRetrofit;
 
     private CategoryViewModel viewModelCategory;
+    private MealDetailViewModel viewModel;
 
     private MealAdapter adapter;
     private PaginationInterface paginationInterface;
@@ -104,6 +106,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
         super.onViewCreated(view, savedInstanceState);
         categoryViewModelRetrofit = new ViewModelProvider(requireActivity()).get(CategoryViewModelRetrofit.class);
         viewModelCategory = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(MealDetailViewModel.class);
         setupRecyclerView();
         // Khởi tạo categoryUtils
         viewModelCategory.getCategoriesCountLiveData().observe(getViewLifecycleOwner(), total -> {

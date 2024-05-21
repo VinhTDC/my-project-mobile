@@ -82,7 +82,6 @@ public class MealDetailResponsive implements MealDetailDataSource{
                             for (int j = 0 ; j < line.length ; j++ ){
                                 if(line[0].equals("Total:") ||line[0].equals("Total") ) {
                                     totalTime = timeList.get(i);
-
                                     break;
                                 }
                             }
@@ -91,6 +90,7 @@ public class MealDetailResponsive implements MealDetailDataSource{
                     float rating  = 0;
                     if(dataSnapshot.child("rating").exists()){
                       rating =  dataSnapshot.child("rating").getValue(Float.class);
+
                     }
                     String description  = "";
                     if(dataSnapshot.child("description").exists()){
@@ -218,4 +218,5 @@ public class MealDetailResponsive implements MealDetailDataSource{
             });
         }
     }
+
 }
