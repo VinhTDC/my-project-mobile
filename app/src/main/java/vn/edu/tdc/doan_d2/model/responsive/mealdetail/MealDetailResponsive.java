@@ -18,12 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vn.edu.tdc.doan_d2.model.comment.Comment;
+import vn.edu.tdc.doan_d2.model.comment.Rating;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
 import vn.edu.tdc.doan_d2.viewmodel.mealdetail.MealDetailViewModel;
 
 public class MealDetailResponsive implements MealDetailDataSource{
     private MutableLiveData<MealDetailData> mealLiveDetailData = new MutableLiveData<>();
+    private MutableLiveData<Rating> ratingLiveDetailData = new MutableLiveData<>();
     private MealDetailData mealDetailData;
+    private Rating rating;
     private Comment commentMeal;
     private ArrayList<Comment> commentMeals;
     private MutableLiveData<ArrayList<Comment>> commentMutableLiveData = new MutableLiveData<>();
@@ -41,11 +44,22 @@ public class MealDetailResponsive implements MealDetailDataSource{
     public MutableLiveData<MealDetailData> getMealDetail(String idMeal) {
         if (mealDetailData == null) {
             loadMealDetailGeneralFromFirebase(idMeal);
+
         } else if (mealDetailData != null && !isDataLoaded) {
             isDataLoaded = true;
             mealLiveDetailData.postValue(mealDetailData);
         }
         return mealLiveDetailData;
+    }
+    public MutableLiveData<Rating> getRating(String idMeal) {
+        if (rating == null) {
+            loadRatingFromFirebase(idMeal);
+
+        } else if (rating != null && !isDataLoaded) {
+            isDataLoaded = true;
+            ratingLiveDetailData.postValue(rating);
+        }
+        return ratingLiveDetailData;
     }
 
 
@@ -53,7 +67,35 @@ public class MealDetailResponsive implements MealDetailDataSource{
     public DatabaseReference getMealDetailFromFirebase() {
         return FirebaseDatabase.getInstance().getReference("RecipeMeal");
     }
+    public DatabaseReference getRatingFromFirebase() {
+        return FirebaseDatabase.getInstance().getReference("Rating");
+    }
+    public void loadRatingFromFirebase(String idMeal){
+        if(rating == null){
+            rating = new Rating();
+        }
+        DatabaseReference ratingRef = getRatingFromFirebase();
+        DatabaseReference dataRef = ratingRef.child(idMeal);
 
+        dataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DataSnapshot dataSnapshot = snapshot;
+                if(dataSnapshot.exists()){
+                    float ratting = 0;
+                    if(dataSnapshot.child("rating").exists()){
+                        ratting = dataSnapshot.child("rating").getValue(Float.class);
+                    }
+                    rating = new Rating(ratting);
+                }
+                ratingLiveDetailData.postValue(rating);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                ratingLiveDetailData.postValue(null);
+            }
+        });
+    }
     @Override
     public void loadMealDetailGeneralFromFirebase(String idMeal) {
         if(mealDetailData == null){
@@ -69,7 +111,6 @@ public class MealDetailResponsive implements MealDetailDataSource{
                     String name  = "";
                     if(dataSnapshot.child("name").exists()){
                        name = dataSnapshot.child("name").getValue(String.class);
-                        Log.d("Value",name);
                     }
                     String totalTime = "";
                     if (dataSnapshot.child("time").exists()) { // Sửa thành Time (viết hoa) do trong json là Time

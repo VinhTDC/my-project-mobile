@@ -1,7 +1,6 @@
 package vn.edu.tdc.doan_d2.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vn.edu.tdc.doan_d2.R;
-import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentCommentBinding;
-import vn.edu.tdc.doan_d2.databinding.RecipeMealDetailLayoutBinding;
 import vn.edu.tdc.doan_d2.model.comment.Comment;
 import vn.edu.tdc.doan_d2.model.comment.CommentDiffCallback;
 import vn.edu.tdc.doan_d2.view.CommentAdapter;
@@ -54,7 +51,7 @@ public class CommentFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.loadCommnet(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<List<Comment>>() {
+        viewModel.loadComment(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<List<Comment>>() {
             @Override
             public void onChanged(List<Comment> comments) {
                 if (comments != null) {
@@ -63,7 +60,6 @@ public class CommentFragment extends Fragment {
                         binding.commentsRecyclerView.setAdapter(adapter);
                         binding.commentsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
                         setData(comments);
-                        adapter.notifyDataSetChanged();
                     } else {
                         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CommentDiffCallback((ArrayList<Comment>) adapter.getData(), (ArrayList<Comment>) comments));
                         adapter.setData(comments);
@@ -82,5 +78,9 @@ public class CommentFragment extends Fragment {
 
     public void setData(List<Comment> data) {
         this.data = data;
+    }
+    public void updateCommnetList(List<Comment> newListComment){
+        adapter.setData(newListComment);
+        adapter.notifyDataSetChanged();
     }
 }

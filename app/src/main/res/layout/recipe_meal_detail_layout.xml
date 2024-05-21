@@ -7,11 +7,14 @@
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/recipe_meal_detail_layout">
+    android:id="@+id/recipe_meal_detail_layout"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
+       >
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageView"
@@ -102,8 +105,6 @@
                 android:layout_height="wrap_content"
                 app:layout_constrainedWidth="true"
                 android:text="Tag 1"
-
-                android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
                 app:chipBackgroundColor="?attr/colorPrimary" />
 
                  
@@ -114,8 +115,6 @@
                 android:layout_height="wrap_content"
                 app:layout_constrainedWidth="true"
                 android:text="Tag 2"
-
-                android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
                 app:chipBackgroundColor="?attr/colorPrimary" />
 
                
@@ -175,8 +174,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="8dp"
-                    android:theme="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox.Dense"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/commentEditText"
@@ -193,7 +192,6 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="Comment"
-                    android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
                     />
             </LinearLayout>
         </LinearLayout>
