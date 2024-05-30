@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar">
+        android:theme="@style/Base.Theme.DoAn_DĐ2">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_4">
 
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/input_4"
                 app:layout_constraintBottom_toTopOf="@+id/swipe_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -28,17 +32,16 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
-                    app:titleTextColor="@android:color/background_dark"
-                    app:menu="@menu/toolbar_menu">
+                    app:menu="@menu/toolbar_menu"
+                    app:title="@string/category_lable"
+                    app:titleTextColor="@android:color/background_light">
 
                     <androidx.appcompat.widget.SearchView
                         android:id="@+id/searchView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:layout_marginTop="10dp"
-                        />
+                        android:layout_marginTop="5dp" />
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.AppBarLayout>
 
@@ -46,7 +49,8 @@
                 android:id="@+id/swipe_layout"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/button_layout"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/appBar"
@@ -54,55 +58,108 @@
                 app:layout_constraintVertical_weight="8"
                 tools:context=".MainActivity">
 
+
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fragmentContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:background="@drawable/bg"
-                    />
+                    android:layout_height="match_parent">
+
+                </androidx.fragment.app.FragmentContainerView>
+
+
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <LinearLayout
-                android:id="@+id/button_layout"
+
+            <!--            Navigation bottom-->
+            <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+            <!--                android:id="@+id/button_layout"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:background="@color/default_background"-->
+            <!--                android:orientation="horizontal"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@+id/swipe_layout"-->
+            <!--                app:layout_constraintVertical_bias="0.5"-->
+            <!--                app:layout_constraintVertical_weight="1">-->
+
+            <!--                <Button-->
+            <!--                    android:id="@+id/buttonNext"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginEnd="24dp"-->
+            <!--                    android:background="@drawable/icon_next2"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                    app:layout_constraintHorizontal_bias="0.5"-->
+            <!--                    app:layout_constraintStart_toEndOf="@+id/home"-->
+            <!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+            <!--                <Button-->
+            <!--                    android:id="@+id/buttonPre"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginStart="24dp"-->
+            <!--                    android:background="@drawable/icon_pre"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                    app:layout_constraintEnd_toStartOf="@+id/home"-->
+            <!--                    app:layout_constraintHorizontal_bias="0.5"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    app:layout_constraintTop_toTopOf="parent" />-->
+            <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigationView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="2dp"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_navigation_bottom"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/swipe_layout"
-                app:layout_constraintVertical_bias="0.5"
-                app:layout_constraintVertical_weight="1">
-
-                <Button
-                    android:id="@+id/buttonPre"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:layout_weight="2"
-                    android:text="@string/btnPre" />
+                app:menu="@menu/bottom_navigation"></com.google.android.material.bottomnavigation.BottomNavigationView>
 
 
-                <Button
-                    android:id="@+id/buttonNext"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:layout_weight="2"
-                    android:text="@string/btnNext" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/buttonPre"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="&#x261A;"
+                android:textSize="30dp"
+                android:backgroundTint="#5E000000"
+                android:textColor="#BA0505"
+                android:layout_marginLeft="10dp"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="@+id/swipe_layout"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/buttonNext"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="&#x261B;"
+                android:textSize="30dp"
+                android:backgroundTint="#5E000000"
+                android:textColor="#01D3EF"
+                android:layout_marginRight="10dp"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="@+id/swipe_layout"
+                app:layout_constraintEnd_toEndOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Thêm NavigationView cho DrawerLayout ở đây -->
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
+            android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:menu="@menu/nav_drawer_menu"
-            android:layout_marginTop="65dp"
-            android:layout_marginBottom="56dp"/>
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="70dp"
+            app:menu="@menu/nav_drawer_menu" />
+
+
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>
