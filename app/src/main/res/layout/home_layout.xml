@@ -50,11 +50,18 @@
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="30dp"
+        android:drawablePadding="-30dp"
+        android:paddingLeft="5dp"
+        android:drawableLeft="@drawable/exit_2"
+        android:drawableRight="@drawable/exit_2"
+        android:paddingRight="10dp"
         android:theme="@style/Theme.Design.NoActionBar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.226"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/wellcome"
