@@ -56,7 +56,7 @@ dependencies {
     implementation ("com.google.android.material:material:1.12.0")
     implementation("com.google.firebase:firebase-auth:23.0.0")
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-storage:21.0.0")
     implementation ("com.firebaseui:firebase-ui-storage:7.2.0")
@@ -85,8 +85,6 @@ dependencies {
     //thư viện firebase đăng nhập với Google
     implementation("com.google.firebase:firebase-auth:23.0.0")
 
-    //chip navigation
-    //thu viện diglog
-    implementation ("androidx.appcompat:appcompat:1.3.1")
+    //chip navigatio
 
 }

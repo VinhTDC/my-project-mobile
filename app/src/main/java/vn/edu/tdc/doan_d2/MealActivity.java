@@ -23,6 +23,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -200,4 +201,9 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
+    }
 }

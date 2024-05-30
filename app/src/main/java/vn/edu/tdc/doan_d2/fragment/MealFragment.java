@@ -26,11 +26,8 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import vn.edu.tdc.doan_d2.MealActivity;
 
 import vn.edu.tdc.doan_d2.MealDetailActivity;
-import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
-import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentMealListBinding;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
@@ -313,5 +310,11 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
 
     public void setCurrentpageLive(int currentpageLive) {
         this.currentpageLive.setValue(currentpageLive);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
     }
 }

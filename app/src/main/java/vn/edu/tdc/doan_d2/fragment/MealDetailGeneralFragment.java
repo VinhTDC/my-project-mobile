@@ -1,6 +1,7 @@
 package vn.edu.tdc.doan_d2.fragment;
 
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,8 +14,10 @@ import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -142,67 +145,69 @@ public class MealDetailGeneralFragment extends Fragment {
 
 
     private void loadImageFromFirebase(String imageUrl) {
-        ImageView imageView = imageViewWeakReference.get();
-        if (imageUrl != null && !imageUrl.isEmpty() && imageView != null) {
+        ImageView imageView = imageViewWeakReference.get(); // Get ImageView from WeakReference
 
-            Glide.with(binding.imageView.getContext())
-                    .asGif() // Thiết lập tải dưới dạng GIF
-                    .load(R.drawable.loadding1) // Đặt tên file loading.gif
-                    .into(binding.imageView);
-            // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
+        if (imageView != null && imageUrl != null && !imageUrl.isEmpty() && getViewLifecycleOwner().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            // Load loading GIF and start Glide request only if the Fragment's view is at least in the STARTED state
+
+            Glide.with(requireContext())
+                    .asGif()
+                    .load(R.drawable.loadding1)
+                    .into(imageView);
+
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference().child(imageUrl);
 
-            // Kiểm tra xem tệp tồn tại trong Firebase Storage
-            storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Glide.with(binding.imageView.getContext())
+            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                if (getViewLifecycleOwner().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+                    // Load the image only if the Fragment's view is at least in the STARTED state
+                    Glide.with(requireContext())
                             .load(uri)
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .skipMemoryCache(true)
-                            .into(binding.imageView);
-                    Glide.with(binding.imageView.getContext()).resumeRequests();
+                            .into(imageView);
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
+            }).addOnFailureListener(exception -> {
+                if (getViewLifecycleOwner().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+                    // Load the error image only if the Fragment's view is at least in the STARTED state
+                    Glide.with(requireContext())
+                            .load(R.drawable.img)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(imageView);
+
                     if (exception instanceof StorageException) {
                         StorageException storageException = (StorageException) exception;
                         int errorCode = storageException.getErrorCode();
                         String errorMessage = storageException.getMessage();
-
-                        Glide.with(binding.imageView.getContext())
-                                .load(R.drawable.img)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .into(binding.imageView);
-                        Glide.with(binding.imageView.getContext()).resumeRequests();
-                        // Xử lý dựa trên mã lỗi và thông điệp
-                        switch (errorCode) {
-                            case StorageException.ERROR_OBJECT_NOT_FOUND:
-                                // Tệp không tồn tại, xử lý tương ứng
-                                Log.e("FirebaseStorage1", "File does not exist: " + errorMessage);
-                                break;
-                            default:
-                                // Xử lý mặc định hoặc thông báo lỗi
-                                break;
-                        }
+                        Log.e("FirebaseStorage", "Error: " + errorMessage + " (Code: " + errorCode + ")"); // Log both error message and code
                     } else {
-
-                        // Xử lý các loại ngoại lệ khác
-                        Log.e("FirebaseStorage2", "Error: " + exception.getMessage());
+                        Log.e("FirebaseStorage", "Error: " + exception.getMessage());
                     }
                 }
             });
         } else {
-            Glide.with(binding.imageView.getContext())
-                    .load(R.drawable.img)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(binding.imageView);
-            Glide.with(binding.imageView.getContext()).resumeRequests();
+            // Load the default error image if ImageView, imageUrl, or lifecycle conditions are not met
+            if(imageView != null) {
+                Glide.with(requireContext())
+                        .load(R.drawable.img)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(imageView);
+            }
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Glide.with(this).onStop();
     }
 
 
