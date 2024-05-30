@@ -109,8 +109,8 @@ public class CategoryViewModel extends AndroidViewModel {
         if (query == null || query.isEmpty()) {
             loadMealsForPage(page, pageSize, lifecycleOwner).observe(lifecycleOwner, filteredCategoriesLiveData::setValue);
         } else {
-            isCategory.observe(lifecycleOwner, isCategory ->
-                    categoryFilter.filterCategories(query, isCategory) // Lọc theo isCategory
+            nameCategory.observe(lifecycleOwner, nameCategory ->
+                    categoryFilter.filterMeals(query, nameCategory) // Lọc theo isCategory
                             .observe(lifecycleOwner, filteredCategoriesLiveData::setValue)
             );
 
