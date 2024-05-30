@@ -82,4 +82,11 @@ dependencies {
     implementation ("androidx.paging:paging-runtime:3.3.0")
     //thư viện xử lí ảnh ở login
     //implementation (com.android.support:cardview-v7:28.0.0)
+    //thư viện firebase đăng nhập với Google
+    implementation("com.google.firebase:firebase-auth:23.0.0")
+
+    //chip navigation
+    //thu viện diglog
+    implementation ("androidx.appcompat:appcompat:1.3.1")
+
 }

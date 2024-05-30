@@ -8,18 +8,22 @@
         android:id="@+id/drawer_layout_meal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:theme="@style/Base.Theme.DoAn_DĐ2"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar">
+            android:background="@drawable/bg_4">
 
 
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appMealBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/input_4"
                 app:layout_constraintBottom_toTopOf="@+id/swipe_layout_meal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -30,16 +34,16 @@
                     android:id="@+id/mealToolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
-                    app:titleTextColor="@android:color/white"
-                    app:menu="@menu/toolbar_menu">
+                    app:menu="@menu/toolbar_menu"
+                    app:title="@string/meal"
+                    app:titleTextColor="@android:color/background_light">
 
                     <androidx.appcompat.widget.SearchView
                         android:id="@+id/searchMealView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:layout_marginTop="10dp" />
+                        android:layout_marginTop="5dp" />
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.AppBarLayout>
 
@@ -47,7 +51,7 @@
                 android:id="@+id/swipe_layout_meal"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/button_layout_meal"
+                app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/appMealBar"
@@ -58,54 +62,87 @@
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fragment_container"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp" />
+                    android:layout_height="match_parent" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <LinearLayout
-                android:id="@+id/button_layout_meal"
+<!--            <LinearLayout-->
+<!--                android:id="@+id/button_layout_meal"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="2dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/swipe_layout_meal"-->
+<!--                app:layout_constraintVertical_bias="0.5"-->
+<!--                app:layout_constraintVertical_weight="1">-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/buttonPreMeal"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="1dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="@string/btnPre" />-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/buttonNextMeal"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="1dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="@string/btnNext" />-->
+<!--            </LinearLayout>-->
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigationView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="2dp"
+                android:layout_height="70dp"
+                android:background="@drawable/bg_navigation_bottom"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/swipe_layout_meal"
-                app:layout_constraintVertical_bias="0.5"
-                app:layout_constraintVertical_weight="1">
+                app:menu="@menu/bottom_navigation"
+                android:theme="@style/Base.Theme.DoAn_DĐ2"/>
 
-                <Button
-                    android:id="@+id/buttonPreMeal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:layout_weight="2"
-                    android:text="@string/btnPre" />
+            <Button
+                android:id="@+id/buttonPreMeal"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="#5E000000"
+                android:text="&#x261A;"
+                android:textAlignment="center"
+                android:textColor="#BA0505"
+                android:textSize="30dp"
+                app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                <Button
-                    android:id="@+id/buttonEndMeal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:layout_weight="2"
-                    android:text="End" />
-
-                <Button
-                    android:id="@+id/buttonNextMeal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:layout_weight="2"
-                    android:text="@string/btnNext" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/buttonNextMeal"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="#5E000000"
+                android:text="&#x261B;"
+                android:textAlignment="center"
+                android:textColor="#01D3EF"
+                android:textSize="30dp"
+                app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Thêm NavigationView cho DrawerLayout ở đây -->
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view_meal"
-            android:layout_width="wrap_content"
+            android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:menu="@menu/nav_drawer_menu" />
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="70dp"
+            app:menu="@menu/nav_drawer_menu"
+           />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

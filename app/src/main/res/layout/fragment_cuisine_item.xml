@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cCategory"
+            android:id="@+id/Cuisine"
             android:layout_width="match_parent"
             android:layout_height="210dp"
             android:layout_margin="5dp"
@@ -26,7 +26,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/nameCategory"
+                    android:id="@+id/nameCuisine"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/imageCategory"
@@ -36,7 +36,7 @@
                     android:background="@drawable/input_3"
                     android:ellipsize="end"
                     android:gravity="center"
-                    android:maxLines="2"
+                    android:maxLines="3"
                     android:layout_marginTop="5dp"
                     android:padding="1dp"
                     android:textAlignment="center"
