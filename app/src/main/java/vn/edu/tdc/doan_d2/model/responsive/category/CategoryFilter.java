@@ -16,6 +16,7 @@
     import vn.edu.tdc.doan_d2.model.BaseCategory;
     import vn.edu.tdc.doan_d2.model.category.Category;
     import vn.edu.tdc.doan_d2.model.cuisine.Cuisine;
+    import vn.edu.tdc.doan_d2.model.meal.Meal;
     import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 
 
@@ -29,7 +30,7 @@
             MutableLiveData<ArrayList<BaseCategory>> filteredLiveData = new MutableLiveData<>();
             isLoading.setValue(true); // Bắt đầu quá trình tải
             if (!query.isEmpty()) {
-                DatabaseReference reference = responsive.getCategoriesFromFirebase();
+                DatabaseReference reference = responsive.getMealsFromFirebase();
                 reference = isCategory ? reference.child("categories") : reference.child("cuisine");
                 Query queryRef = reference.orderByChild("name")
                         .startAt(query.trim().toLowerCase())
@@ -54,6 +55,50 @@
                             }
 
                             filteredLiveData.postValue(filteredCategories);
+                            isLoading.setValue(false);
+                        } else {
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Xử lý lỗi
+                        filteredLiveData.postValue(null);
+                        isLoading.setValue(false);
+                    }
+                });
+            }else {
+
+            }
+            Log.d("baseCategory",filteredLiveData.getValue()+"");
+            return filteredLiveData;
+        }
+        public MutableLiveData<ArrayList<BaseCategory>> filterMeals(String query,String key) {
+            Log.d("KeyString",key);
+            MutableLiveData<ArrayList<BaseCategory>> filteredLiveData = new MutableLiveData<>();
+            isLoading.setValue(true); // Bắt đầu quá trình tải
+            if (!query.isEmpty()) {
+                DatabaseReference reference = responsive.getMealsFromFirebase();
+                reference = reference.child(key) ;
+
+
+                Query queryRef = reference.orderByChild("name")
+                        .startAt(query.trim().toLowerCase() )
+                        .endAt(query.trim() + "\uf8ff"); //
+                queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<BaseCategory> filteredMeals = new ArrayList<>();
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
+                                BaseCategory baseCategory = categorySnapshot.getValue(Meal.class);
+                                if (baseCategory != null) {
+                                    // Sử dụng biểu thức chính quy để kiểm tra
+                                    filteredMeals.add(baseCategory);
+                                }
+                            }
+
+                            filteredLiveData.postValue(filteredMeals);
                             isLoading.setValue(false);
                         } else {
                         }

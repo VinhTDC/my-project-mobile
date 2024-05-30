@@ -9,7 +9,8 @@ public class Recipe {
     private String id;
     @SerializedName("data")
     @Expose
-    private MealDetailData data;
+    private MealDetailDataT data;
+
 
     public String getId() {
         return id;
@@ -19,11 +20,11 @@ public class Recipe {
         this.id = id;
     }
 
-    public MealDetailData getData() {
+    public MealDetailDataT getData() {
         return data;
     }
 
-    public void setData(MealDetailData data) {
+    public void setData(MealDetailDataT data) {
         this.data = data;
     }
 }

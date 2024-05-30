@@ -1,5 +1,6 @@
 package vn.edu.tdc.doan_d2;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -21,11 +23,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
 import vn.edu.tdc.doan_d2.databinding.ActivityMealBinding;
+import vn.edu.tdc.doan_d2.fragment.CategoryFragment;
 import vn.edu.tdc.doan_d2.fragment.MealFragment;
 import vn.edu.tdc.doan_d2.fragment.PaginationInterface;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
@@ -89,6 +93,21 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
         }
     }
 
+    //Tạo DiaLog thông báo thoát
+    private void showExitConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Exit Confirmation")
+                .setMessage("Bạn có muốn thoát không?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
@@ -105,12 +124,22 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int itemId = menuItem.getItemId();
-                if (itemId == R.id.id_category) {
+                if (itemId == R.id.id_home) {
+                    // Chuyển sang trang chủ
+                    Intent intent = new Intent(MealActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                } else if (itemId == R.id.id_category) {
+                    // Chuyển sang trang danh mục
                     viewModel.setIsCategory(true);
-                    fragment.setCurrentPage(0);
+                    loadFragment(new CategoryFragment());
                 } else if (itemId == R.id.id_cuisine) {
+                    // Chuyển sang trang món ăn
                     viewModel.setIsCategory(false);
-                    fragment.setCurrentPage(0);
+                    //loadFragment(new CuisineFragment()); // Cần tạo Fragment cho trang món ăn
+                    loadFragment(new CategoryFragment());
+                } else if (itemId == R.id.id_exit) {
+                    // Đóng ứng dụng
+                    showExitConfirmationDialog();
                 }
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
@@ -121,9 +150,6 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
-
-
-
 
     @Override
     protected void onResume() {
@@ -147,6 +173,14 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
 
     }
 
+    // Hàm loadFragment
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -167,4 +201,9 @@ public class MealActivity extends AppCompatActivity implements PaginationInterfa
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
+    }
 }

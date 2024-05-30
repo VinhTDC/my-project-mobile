@@ -1,22 +1,26 @@
 package vn.edu.tdc.doan_d2.view;
 
 
+import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
@@ -117,6 +121,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
                     Log.d("Log.d", item.getId() + "" + position);
                 }
             });
+
         }
 
 
@@ -136,25 +141,44 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
 
         private void loadImageFromFirebase(String imageUrl) {
             ImageView imageView = imageViewWeakReference.get();
-            if (imageUrl != null && !imageUrl.isEmpty() && imageView != null) {
-                Glide.with(fragmentMealItemBinding.imageMeal.getContext())
+            if (imageUrl != null && !imageUrl.isEmpty() && imageView != null && imageView.getContext() instanceof Activity && !((Activity) imageView.getContext()).isDestroyed()) {
+                Glide.with(imageView.getContext())
                         .asGif() // Thiết lập tải dưới dạng GIF
                         .load(R.drawable.loadding1) // Đặt tên file loading.gif
                         .into(fragmentMealItemBinding.imageMeal);
                 // Tiếp tục xử lý chỉ khi imageUrl không null và không rỗng
                 FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference().child("categories/" + imageUrl);
+                StorageReference storageRef = storage.getReference().child("imgmeal/"+imageUrl);
 
                 // Kiểm tra xem tệp tồn tại trong Firebase Storage
-                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Glide.with(fragmentMealItemBinding.imageMeal.getContext())
+                storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    if (imageView != null && imageView.getContext() instanceof Activity && !((Activity) imageView.getContext()).isDestroyed()) {
+                        Glide.with(imageView.getContext())
                                 .load(uri)
+                                .listener(new RequestListener<Drawable>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull com.bumptech.glide.request.target.Target<Drawable> target, boolean isFirstResource) {
+                                        if (imageView.getContext() instanceof Activity && ((Activity) imageView.getContext()).isDestroyed()) {
+                                            Glide.with(imageView.getContext()).clear(imageView);
+                                            return true;
+                                        }
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, com.bumptech.glide.request.target.Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                                        if (imageView.getContext() instanceof Activity && ((Activity) imageView.getContext()).isDestroyed()) {
+                                            // Nếu Activity đã bị hủy, hủy yêu cầu Glide
+                                            Glide.with(imageView.getContext()).clear(imageView);
+                                            return true; // Đã xử lý yêu cầu
+                                        }
+                                        return false; // Cho phép Glide hiển thị ảnh
+                                    }
+
+                                })
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .skipMemoryCache(true)
-                                .into(fragmentMealItemBinding.imageMeal);
-                        Glide.with(fragmentMealItemBinding.imageMeal.getContext()).resumeRequests();
+                                .into(imageView);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -195,7 +219,10 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
                         .into(fragmentMealItemBinding.imageMeal);
                 Glide.with(fragmentMealItemBinding.imageMeal.getContext()).resumeRequests();
             }
+
         }
+
+
     }
 
     public void setData(ArrayList<BaseCategory> newData) {
@@ -203,6 +230,12 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MyViewHolder> 
         data.clear();
         data.addAll(newData);
         diffResult.dispatchUpdatesTo(this);
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull MyViewHolder holder) {
+        super.onViewRecycled(holder);
+        Glide.with(holder.itemView.getContext()).clear(holder.fragmentMealItemBinding.imageMeal);
     }
 
     public ArrayList<BaseCategory> getData() {

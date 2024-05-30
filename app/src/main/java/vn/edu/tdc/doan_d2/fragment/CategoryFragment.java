@@ -48,9 +48,8 @@ import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
 
 public class CategoryFragment extends Fragment implements PaginationInterface, OnCategoryClickListener {
     private FragmentCategoryBinding binding;
-    private MealFragment mealFragment;
     private SearchView searchView;
-    private ActivityMainBinding bindingMain;
+
     CategoryViewModelRetrofit categoryViewModelRetrofit;
 
     private CategoryViewModel viewModelCategory;
@@ -65,10 +64,8 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
     private boolean isLoading = true;
     private static final int PAGE_SIZE = 50;
     private boolean isUpdatingAdapter = false;
-
-    private CategoryFilter categoryFilter;
     private MutableLiveData<String> currentQueryLiveData = new MutableLiveData<>();
-
+    private final MutableLiveData<Integer> currentPageLiveData = new MutableLiveData<>(currentPage);
 
     public void setSearchView(SearchView searchView) {
         this.searchView = searchView;
@@ -105,6 +102,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentCategoryBinding.inflate(inflater, container, false);
         binding.getRoot().setTag(tagFragment);
+
         return binding.getRoot();
     }
 
@@ -119,9 +117,12 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
         viewModelCategory.getCategoriesCountLiveData().observe(getViewLifecycleOwner(), total -> {
             this.categoriesCount = total;
         });
-
+        currentPageLiveData.observe(getViewLifecycleOwner(), page -> {
+            this.currentPage = page; // Cập nhật currentPage từ LiveData
+            loadCategoriesForPage(page);
+        });
         loadCategoriesForSearch();
-        loadCategoriesForPage(currentPage);
+
     }
 
     private void updateCategoriesInAdapter(ArrayList<BaseCategory> newCategories) {
@@ -166,14 +167,9 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
                 int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
                 Log.d("total", totalPage + "");
                 if (currentPage > 0) {
-                    currentPage--;
-                    loadCategoriesForPage(currentPage);
-                    adapter.notifyDataSetChanged();
-
+                    currentPageLiveData.setValue(currentPage - 1); // Sử dụng LiveData để cập nhật
                 } else {
-                    currentPage = totalPage - 1;
-                    loadCategoriesForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(totalPage - 1); // Sử dụng LiveData để cập nhật
                 }
             }
         }
@@ -186,13 +182,9 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
         if (adapter != null) {
             if (viewModelCategory != null) { // Kiểm tra null
                 if (currentPage < totalPage - 1) {
-                    currentPage++;
-                    loadCategoriesForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(currentPage + 1); // Sử dụng LiveData để cập nhật
                 } else {
-                    currentPage = 0;
-                    loadCategoriesForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(0); // Sử dụng LiveData để cập nhật
                 }
             }
         }
@@ -262,6 +254,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
                             if (adapter == null) {
                                 adapter = new MyAdapter(requireContext(), categories, CategoryFragment.this);
                                 binding.recyclerview.setAdapter(adapter);
+                                currentPageLiveData.setValue(page);
                                 adapter.notifyDataSetChanged();
                             } else {
                                 DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), categories));
@@ -269,7 +262,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
                                 diffResult.dispatchUpdatesTo(adapter);
                                 adapter.notifyDataSetChanged();
                             }
-
+                            Log.e("CategoryFragment123131", "Failed to load categories for page " + page);
                         } else {
                             // Handle loading error (e.g., show error message)
                             Log.e("CategoryFragment", "Failed to load categories for page " + page);
@@ -289,9 +282,7 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
 
 
     public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-        Log.d("123213131", "call");
-
+        this.currentPageLiveData.setValue(currentPage);
     }
 
     @Override
@@ -309,5 +300,11 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
         super.onDestroyView();
 
         Glide.with(this).pauseRequests();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
     }
 }

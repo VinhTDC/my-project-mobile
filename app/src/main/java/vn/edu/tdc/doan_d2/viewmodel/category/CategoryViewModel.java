@@ -105,6 +105,17 @@ public class CategoryViewModel extends AndroidViewModel {
 
         }
     }
+    public void updateSearchQueryMeal(String query, int page, int pageSize, LifecycleOwner lifecycleOwner) {
+        if (query == null || query.isEmpty()) {
+            loadMealsForPage(page, pageSize, lifecycleOwner).observe(lifecycleOwner, filteredCategoriesLiveData::setValue);
+        } else {
+            nameCategory.observe(lifecycleOwner, nameCategory ->
+                    categoryFilter.filterMeals(query, nameCategory) // Lọc theo isCategory
+                            .observe(lifecycleOwner, filteredCategoriesLiveData::setValue)
+            );
+
+        }
+    }
 
     public void setIsCategory(boolean key) {
         this.isCategory.postValue(key);

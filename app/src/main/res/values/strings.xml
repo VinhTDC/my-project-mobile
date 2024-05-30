@@ -29,4 +29,10 @@
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
+    <string name="meal">Meal list</string>
+    <string name="category_lable">Category</string>
+    <string name="comment_meal">Comment</string>
+    <string name="evaluate_rating">Evaluate:</string>
+    <string name="add_a_comment">Add a comment...</string>
+    <string name="comment">Comment</string>
 </resources>

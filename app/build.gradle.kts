@@ -52,10 +52,16 @@ dependencies {
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
+
     implementation ("com.google.android.material:material:1.12.0")
+
+
     implementation("com.google.firebase:firebase-auth:23.0.0")
+
+
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-storage:21.0.0")
     implementation ("com.firebaseui:firebase-ui-storage:7.2.0")
@@ -72,6 +78,7 @@ dependencies {
     implementation ("androidx.fragment:fragment:1.7.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
     //Swipe to refesh Layout
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     //Glide

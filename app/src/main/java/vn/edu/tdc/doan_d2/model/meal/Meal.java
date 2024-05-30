@@ -12,12 +12,17 @@ public class Meal implements BaseCategory {
     @SerializedName("name")
     @Expose
     private String name;
+    @SerializedName("imgUrl")
+    @Expose
     private String imgUrl;
 
     public Meal(Integer id, String name, String imgUrl) {
         this.id = id;
         this.name = name;
         this.imgUrl = imgUrl;
+    }
+    public Meal() {
+
     }
 
     @Override

@@ -26,11 +26,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import vn.edu.tdc.doan_d2.MealActivity;
 
+import vn.edu.tdc.doan_d2.MealActivity;
 import vn.edu.tdc.doan_d2.MealDetailActivity;
-import vn.edu.tdc.doan_d2.databinding.ActivityMainBinding;
-import vn.edu.tdc.doan_d2.databinding.FragmentCategoryBinding;
 import vn.edu.tdc.doan_d2.databinding.FragmentMealListBinding;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
 import vn.edu.tdc.doan_d2.model.category.CategoryDiffCallback;
@@ -38,16 +36,18 @@ import vn.edu.tdc.doan_d2.model.responsive.category.CategoryFilter;
 import vn.edu.tdc.doan_d2.view.MealAdapter;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModel;
 import vn.edu.tdc.doan_d2.viewmodel.category.CategoryViewModelRetrofit;
+import vn.edu.tdc.doan_d2.viewmodel.mealdetail.MealDetailViewModel;
 
 
 public class MealFragment extends Fragment implements PaginationInterface,OnMealClickListener {
     private FragmentMealListBinding binding;
 
     private SearchView searchView;
-    private ActivityMainBinding bindingMain;
+
     CategoryViewModelRetrofit categoryViewModelRetrofit;
 
     private CategoryViewModel viewModelCategory;
+    private MealDetailViewModel viewModel;
 
     private MealAdapter adapter;
     private PaginationInterface paginationInterface;
@@ -58,9 +58,11 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
     private static final int PAGE_SIZE = 50;
     private boolean isUpdatingAdapter = false;
 
+    private MutableLiveData<Integer> currentpageLive =  new MutableLiveData<>(currentPage);
 
     private CategoryFilter categoryFilter;
     private MutableLiveData<String> currentQueryLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> currentPageLiveData = new MutableLiveData<>(currentPage);
 
 
 
@@ -103,13 +105,17 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
         super.onViewCreated(view, savedInstanceState);
         categoryViewModelRetrofit = new ViewModelProvider(requireActivity()).get(CategoryViewModelRetrofit.class);
         viewModelCategory = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(MealDetailViewModel.class);
         setupRecyclerView();
         // Khởi tạo categoryUtils
         viewModelCategory.getCategoriesCountLiveData().observe(getViewLifecycleOwner(), total -> {
             this.categoriesCount = total;
         });
         loadMealsForSearch();
-        loadMealsForPage(currentPage);
+        currentpageLive.observe(getViewLifecycleOwner(),page ->{
+            loadMealsForPage(page);
+        });
+
 
     }
 
@@ -147,7 +153,6 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
         binding.recyclerViewMeal.setAdapter(adapter);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void goToPreviousPage() {
         if (adapter != null) {
@@ -155,39 +160,33 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                 int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
                 Log.d("total", totalPage + "");
                 if (currentPage > 0) {
-                    currentPage--;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
-
+                    currentPageLiveData.setValue(currentPage - 1); // Sử dụng LiveData để cập nhật
                 } else {
-                    currentPage = totalPage - 1;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(totalPage - 1); // Sử dụng LiveData để cập nhật
                 }
             }
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
+
+
+
     @Override
     public void goToNextPage() {
-        Log.d("Gotonext","call");
         int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
         if (adapter != null) {
             if (viewModelCategory != null) { // Kiểm tra null
                 if (currentPage < totalPage - 1) {
-                    currentPage++;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(currentPage + 1); // Sử dụng LiveData để cập nhật
                 } else {
-                    currentPage = 0;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(0); // Sử dụng LiveData để cập nhật
                 }
             }
         }
 
     }
+
 
     private void loadMealsForSearch() {
         viewModelCategory.getFilteredCategoriesLiveData().observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseCategory>>() {
@@ -225,7 +224,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                     // Gọi phương thức tìm kiếm trong fragment
                     currentQueryLiveData.setValue(query);
                     currentPage = 0;
-                    viewModelCategory.updateSearchQuery(query, currentPage, PAGE_SIZE, getViewLifecycleOwner());
+                    viewModelCategory.updateSearchQueryMeal(query, currentPage, PAGE_SIZE, getViewLifecycleOwner());
                     return true;
                 }
 
@@ -233,7 +232,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                 public boolean onQueryTextChange(String newText) {
                     currentQueryLiveData.setValue(newText);
                     currentPage = 0;
-                    viewModelCategory.updateSearchQuery(newText, currentPage, PAGE_SIZE, getViewLifecycleOwner()); // Cập nhật ViewModel với truy vấn tìm kiếm mới
+                    viewModelCategory.updateSearchQueryMeal(newText, currentPage, PAGE_SIZE, getViewLifecycleOwner()); // Cập nhật ViewModel với truy vấn tìm kiếm mới
                     return true;
                 }
             });
@@ -241,7 +240,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
     }
 
     public void loadMealsForPage(int page) {
-        Log.d("CategoryFragment", "Failed to load categories for page " + page);
+        Log.d("CategoryFragment1232", "Failed to load categories for page " + page);
         viewModelCategory.loadMealsForPage(page, PAGE_SIZE, getViewLifecycleOwner()).observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseCategory>>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -252,6 +251,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                     if (adapter == null) {
                         adapter = new MealAdapter(requireContext(), meals,MealFragment.this);
                         binding.recyclerViewMeal.setAdapter(adapter);
+                        currentpageLive.setValue(page);
                         adapter.notifyDataSetChanged();
                     } else {
                         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CategoryDiffCallback(adapter.getData(), meals));
@@ -292,10 +292,24 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
 
     @Override
     public void onMealClick(BaseCategory meal) {
-        categoryViewModelRetrofit.getAllMealDetailRetrofit(meal.getId());
-        Intent intent = new Intent(getActivity(), MealDetailActivity.class); // Activity chứa MealDetailFragment
-        intent.putExtra("mealId", meal.getId()+"");
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        categoryViewModelRetrofit.getAllMealDetailRetrofit(meal.getId()+"");
+            Intent intent = new Intent(getActivity(), MealDetailActivity.class);
+            intent.putExtra("mealId", meal.getId()+""); // Convert to String
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+    }
+
+    public MutableLiveData<Integer> getCurrentpageLive() {
+        return currentpageLive;
+    }
+
+    public void setCurrentpageLive(int currentpageLive) {
+        this.currentpageLive.setValue(currentpageLive);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
     }
 }
