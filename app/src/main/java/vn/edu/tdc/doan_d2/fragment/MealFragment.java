@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 
+import vn.edu.tdc.doan_d2.MealActivity;
 import vn.edu.tdc.doan_d2.MealDetailActivity;
 import vn.edu.tdc.doan_d2.databinding.FragmentMealListBinding;
 import vn.edu.tdc.doan_d2.model.BaseCategory;
@@ -61,6 +62,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
 
     private CategoryFilter categoryFilter;
     private MutableLiveData<String> currentQueryLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> currentPageLiveData = new MutableLiveData<>(currentPage);
 
 
 
@@ -151,7 +153,6 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
         binding.recyclerViewMeal.setAdapter(adapter);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void goToPreviousPage() {
         if (adapter != null) {
@@ -159,39 +160,33 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                 int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
                 Log.d("total", totalPage + "");
                 if (currentPage > 0) {
-                    currentPage--;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
-
+                    currentPageLiveData.setValue(currentPage - 1); // Sử dụng LiveData để cập nhật
                 } else {
-                    currentPage = totalPage - 1;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(totalPage - 1); // Sử dụng LiveData để cập nhật
                 }
             }
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
+
+
+
     @Override
     public void goToNextPage() {
-        Log.d("Gotonext","call");
         int totalPage = (int) Math.ceil((double) categoriesCount / PAGE_SIZE);
         if (adapter != null) {
             if (viewModelCategory != null) { // Kiểm tra null
                 if (currentPage < totalPage - 1) {
-                    currentPage++;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(currentPage + 1); // Sử dụng LiveData để cập nhật
                 } else {
-                    currentPage = 0;
-                    loadMealsForPage(currentPage);
-                    adapter.notifyDataSetChanged();
+                    currentPageLiveData.setValue(0); // Sử dụng LiveData để cập nhật
                 }
             }
         }
 
     }
+
 
     private void loadMealsForSearch() {
         viewModelCategory.getFilteredCategoriesLiveData().observe(getViewLifecycleOwner(), new Observer<ArrayList<BaseCategory>>() {
@@ -229,7 +224,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                     // Gọi phương thức tìm kiếm trong fragment
                     currentQueryLiveData.setValue(query);
                     currentPage = 0;
-                    viewModelCategory.updateSearchQuery(query, currentPage, PAGE_SIZE, getViewLifecycleOwner());
+                    viewModelCategory.updateSearchQueryMeal(query, currentPage, PAGE_SIZE, getViewLifecycleOwner());
                     return true;
                 }
 
@@ -237,7 +232,7 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
                 public boolean onQueryTextChange(String newText) {
                     currentQueryLiveData.setValue(newText);
                     currentPage = 0;
-                    viewModelCategory.updateSearchQuery(newText, currentPage, PAGE_SIZE, getViewLifecycleOwner()); // Cập nhật ViewModel với truy vấn tìm kiếm mới
+                    viewModelCategory.updateSearchQueryMeal(newText, currentPage, PAGE_SIZE, getViewLifecycleOwner()); // Cập nhật ViewModel với truy vấn tìm kiếm mới
                     return true;
                 }
             });
@@ -297,11 +292,11 @@ public class MealFragment extends Fragment implements PaginationInterface,OnMeal
 
     @Override
     public void onMealClick(BaseCategory meal) {
-        categoryViewModelRetrofit.getAllMealDetailRetrofit(meal.getId());
-        Intent intent = new Intent(getActivity(), MealDetailActivity.class); // Activity chứa MealDetailFragment
-        intent.putExtra("mealId", meal.getId()+"");
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        categoryViewModelRetrofit.getAllMealDetailRetrofit(meal.getId()+"");
+            Intent intent = new Intent(getActivity(), MealDetailActivity.class);
+            intent.putExtra("mealId", meal.getId()+""); // Convert to String
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
     }
 
     public MutableLiveData<Integer> getCurrentpageLive() {

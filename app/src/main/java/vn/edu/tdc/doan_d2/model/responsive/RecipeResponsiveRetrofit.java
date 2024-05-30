@@ -177,7 +177,7 @@ public class RecipeResponsiveRetrofit {
         }
         return dataMealLiveDataRetrofit;
     }
-    public MutableLiveData<MealDetailDataT> getDataMealDetailMutableLiveDataRetrofit(int idMeal) {
+    public MutableLiveData<MealDetailDataT> getDataMealDetailMutableLiveDataRetrofit(String idMeal) {
 
         int runCount = getRetrofitRunCount();
         Log.d("runCount",runCount+"");
@@ -278,12 +278,12 @@ public class RecipeResponsiveRetrofit {
         editor.apply();
     }
 
-    private void saveMealDetailToFirebase(MealDetailDataT mealDetail, int idMeal) {
+    private void saveMealDetailToFirebase(MealDetailDataT mealDetail, String idMeal) {
         String stringIdMeal  = idMeal+"";
 //        mealDetail.setRating(0);
         DatabaseReference mealDetailRef = FirebaseDatabase.getInstance().getReference("RecipeMeal/" + stringIdMeal);
         // Tạo key tự động cho mỗi meal
-        if(idMeal != 0){
+        if(idMeal != null){
             mealDetailRef.child(stringIdMeal).setValue(mealDetail);
         } else {
             String key = "Loading";
