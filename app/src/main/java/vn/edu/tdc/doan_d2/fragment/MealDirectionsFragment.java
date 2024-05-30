@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+
 import vn.edu.tdc.doan_d2.databinding.GuideRecipeMealLayoutBinding;
 import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailData;
 import vn.edu.tdc.doan_d2.model.responsive.mealdetail.MealDetailResponsive;
@@ -69,5 +71,11 @@ public class MealDirectionsFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
     }
 }

@@ -301,4 +301,10 @@ public class CategoryFragment extends Fragment implements PaginationInterface, O
 
         Glide.with(this).pauseRequests();
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Glide.with(this).onStop();
+    }
 }
