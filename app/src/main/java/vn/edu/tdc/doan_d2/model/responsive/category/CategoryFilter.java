@@ -83,7 +83,7 @@
 
 
                 Query queryRef = reference.orderByChild("name")
-                        .startAt(query.trim().toLowerCase() )
+                        .startAt(query.trim() )
                         .endAt(query.trim() + "\uf8ff"); //
                 queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
