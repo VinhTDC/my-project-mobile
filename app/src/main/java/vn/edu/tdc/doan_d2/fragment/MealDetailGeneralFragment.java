@@ -29,6 +29,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -65,6 +66,7 @@ public class MealDetailGeneralFragment extends Fragment {
     private MealDetailResponsive mealDetailResponsive;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final String tagFragmnetCommnet = "FRAGMNET_COMMENT";
+    private FirebaseAuth mAuth;
     private String idMealC;
     @Nullable
     @Override
@@ -95,6 +97,9 @@ public class MealDetailGeneralFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setupData();
         adapter = new CommentAdapter(getContext(),fragment.getData());
+        String email = mAuth.getCurrentUser().getEmail();
+        String[] arrEmail = email.split("@");
+        String name = arrEmail[0];
         binding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +109,7 @@ public class MealDetailGeneralFragment extends Fragment {
                 if (!commentText.isEmpty()) {
                     // Gửi bình luận và rating lên Firebase
                     viewModel.getIdMeal().observe(getViewLifecycleOwner(), idMeal -> {
-                        Comment comment = new Comment(idMeal, commentText, "Vinh", rating);
+                        Comment comment = new Comment(idMeal, commentText, name, rating);
                         mealDetailResponsive.sendCommentToFirebase(comment, idMeal);
                         idMealC = idMeal;
                         mealDetailResponsive.getComment(idMeal).observe(getViewLifecycleOwner(), commentList -> {
