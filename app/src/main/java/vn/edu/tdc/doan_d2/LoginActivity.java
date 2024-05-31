@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -42,6 +43,8 @@ public class LoginActivity extends AppCompatActivity {
 
     FirebaseUser mUser;
     ImageView btnGoogle;
+    private TextView textForgotPassWord;
+
 
 
     @Override
@@ -63,7 +66,8 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
-        // Quên mật khẩu
+////         Quên mật khẩu
+//        textForgotPassWord = findViewById(R.id.textForgotPassWord);
 //        textForgotPassWord.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
