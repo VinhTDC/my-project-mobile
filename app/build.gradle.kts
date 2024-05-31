@@ -54,9 +54,14 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
 
     implementation ("com.google.android.material:material:1.12.0")
+
+
     implementation("com.google.firebase:firebase-auth:23.0.0")
+
+
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-storage:21.0.0")
     implementation ("com.firebaseui:firebase-ui-storage:7.2.0")
@@ -67,11 +72,13 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.7.7")
     implementation("androidx.leanback:leanback:1.0.0")
     implementation("androidx.activity:activity:1.9.0")
+    implementation("com.google.firebase:firebase-auth:23.0.0")
     testImplementation("junit:junit:4.13.2")
     implementation ("androidx.databinding:databinding-runtime:8.4.1")
     implementation ("androidx.fragment:fragment:1.7.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
     //Swipe to refesh Layout
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     //Glide
@@ -82,9 +89,6 @@ dependencies {
     implementation ("androidx.paging:paging-runtime:3.3.0")
     //thư viện xử lí ảnh ở login
     //implementation (com.android.support:cardview-v7:28.0.0)
-    //thư viện firebase đăng nhập với Google
-    implementation("com.google.firebase:firebase-auth:23.0.0")
-
-    //chip navigatio
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
 }

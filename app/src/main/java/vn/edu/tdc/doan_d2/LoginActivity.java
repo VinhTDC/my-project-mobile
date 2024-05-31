@@ -64,8 +64,8 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
-        textForgotPassWord = findViewById(R.id.textForgotPassWord);
         // Quên mật khẩu
+        textForgotPassWord = findViewById(R.id.textForgotPassWord);
         textForgotPassWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

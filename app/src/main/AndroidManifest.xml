@@ -25,12 +25,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
+        android:label="Learn Cooking"
+        android:windowSoftInputMode="stateVisible|adjustResize"
         tools:targetApi="31">
+
         <activity
-            android:name=".ForgotPasswordActivity"
-            android:exported="false" />
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Design.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPasswordActivity"
             android:exported="false" />
         <activity
             android:name=".GoogleSignActivity"
@@ -49,15 +62,10 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:theme="@style/Base.Theme.DoAn_DĐ2"
-            android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/Base.Theme.DoAn_DĐ2">
         </activity>
 
         <meta-data
