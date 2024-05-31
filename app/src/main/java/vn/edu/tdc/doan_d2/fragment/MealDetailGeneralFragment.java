@@ -65,6 +65,9 @@ public class MealDetailGeneralFragment extends Fragment {
     private MealDetailResponsive mealDetailResponsive;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final String tagFragmnetCommnet = "FRAGMNET_COMMENT";
+
+    private FirebaseAuth firebaseAuth;
+
     private String idMealC;
     @Nullable
     @Override
@@ -95,6 +98,14 @@ public class MealDetailGeneralFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setupData();
         adapter = new CommentAdapter(getContext(),fragment.getData());
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        String emailUser = firebaseAuth.getCurrentUser().getEmail();
+
+        String[] arr = emailUser.split("@");
+
+        String userName = arr[0];
+
         binding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +115,9 @@ public class MealDetailGeneralFragment extends Fragment {
                 if (!commentText.isEmpty()) {
                     // Gửi bình luận và rating lên Firebase
                     viewModel.getIdMeal().observe(getViewLifecycleOwner(), idMeal -> {
-                        Comment comment = new Comment(idMeal, commentText, "Vinh", rating);
+
+                        Comment comment = new Comment(idMeal, commentText, userName, rating);
+
                         mealDetailResponsive.sendCommentToFirebase(comment, idMeal);
                         idMealC = idMeal;
                         mealDetailResponsive.getComment(idMeal).observe(getViewLifecycleOwner(), commentList -> {
