@@ -22,24 +22,22 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/logo"
-        android:label="Learn Cooking"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
+        android:label="Learn Cooking"
         tools:targetApi="31">
-        <activity
-            android:name=".ForgotPasswordActivity"
-            android:exported="false" />
+
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
@@ -60,9 +58,11 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:exported="true"
+            android:theme="@style/Base.Theme.DoAn_DĐ2">
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"
