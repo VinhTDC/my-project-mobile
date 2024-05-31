@@ -26,6 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
         android:label="Learn Cooking"
+        android:windowSoftInputMode="stateVisible|adjustResize"
         tools:targetApi="31">
 
         <activity
@@ -40,6 +41,9 @@
 
         <activity
             android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPasswordActivity"
             android:exported="false" />
         <activity
             android:name=".GoogleSignActivity"
