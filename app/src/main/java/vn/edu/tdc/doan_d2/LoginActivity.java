@@ -42,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
 
     FirebaseUser mUser;
     ImageView btnGoogle;
+    private TextView textForgotPassWord;
 
 
     @Override
@@ -63,33 +64,34 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
+        textForgotPassWord = findViewById(R.id.textForgotPassWord);
         // Quên mật khẩu
-//        textForgotPassWord.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Hiển thị hộp thoại xác nhận quên mật khẩu
-//                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-//                builder.setTitle("Forgot Password?");
-//                builder.setMessage("Are you sure you want to reset your password?");
-//                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // Điều hướng người dùng đến một hoạt động mới để quên mật khẩu
-//                        Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-//                        startActivity(intent);
-//                    }
-//                });
-//                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // Không làm gì khi người dùng chọn "No"
-//                        dialog.dismiss();
-//                    }
-//                });
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-//            }
-//        });
+        textForgotPassWord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Hiển thị hộp thoại xác nhận quên mật khẩu
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                builder.setTitle("Forgot Password?");
+                builder.setMessage("Are you sure you want to reset your password?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Điều hướng người dùng đến một hoạt động mới để quên mật khẩu
+                        Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                        startActivity(intent);
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Không làm gì khi người dùng chọn "No"
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
 
         createNewAcount.setOnClickListener(new View.OnClickListener() {

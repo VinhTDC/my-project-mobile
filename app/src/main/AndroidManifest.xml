@@ -39,6 +39,9 @@
         </activity>
 
         <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeActivity"
             android:exported="false" />
         <activity
@@ -58,10 +61,19 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
             android:exported="true"
+
+            android:theme="@style/Base.Theme.DoAn_DĐ2"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
             android:theme="@style/Base.Theme.DoAn_DĐ2">
+
         </activity>
 
         <meta-data
