@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
         android:label="Learn Cooking"
-        android:windowSoftInputMode="stateVisible|adjustResize"
+        android:windowSoftInputMode="adjustResize"
         tools:targetApi="31">
 
         <activity
@@ -50,19 +50,23 @@
             android:exported="false" />
         <activity
             android:name=".MealDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            />
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+
             android:exported="false" />
         <activity
             android:name=".MealActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:theme="@style/Base.Theme.DoAn_DĐ2">

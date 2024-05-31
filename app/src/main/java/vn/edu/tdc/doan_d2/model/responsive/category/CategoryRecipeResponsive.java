@@ -52,9 +52,9 @@ public class CategoryRecipeResponsive implements CategoryDataSource {
     public MutableLiveData<ArrayList<BaseCategory>> getAllCategories(boolean isCategory) {
         if (categoriesData == null) {
             loadCategoriesFromFirebase(isCategory);
-            Log.d("Firebase1111111111111111", "Data snapshot is empty");
+//            Log.d("Firebase1111111111111111", "Data snapshot is empty");
         } else if (categoriesData != null && !isDataLoaded) {
-            Log.d("Firebase", "Data snapshot is empty");
+//            Log.d("Firebase", "Data snapshot is empty");
             isDataLoaded = true;
             categoriesLiveData.postValue(categoriesData);
         }

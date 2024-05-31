@@ -13,6 +13,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,7 +72,16 @@ public class RecipeResponsiveRetrofit {
             incrementRetrofitRunCount(); // Tăng biến đếm
             if (isCategory) {
                 RecipeCategoryApiService recipeCategoryApiService = RetrofitInstance.getServiceCategory();
-                Call<CategoryResponse> call = recipeCategoryApiService.getRecipeCategory(application.getApplicationContext().getString(R.string.api_key2));
+                SharedPreferences prefs = application.getSharedPreferences("API_KEYS", Context.MODE_PRIVATE);
+                Set<String> apiKeySet = prefs.getStringSet("keys", new HashSet<>(Arrays.asList(
+                        application.getApplicationContext().getString(R.string.api_key),
+                        application.getApplicationContext().getString(R.string.api_key1),
+                        application.getApplicationContext().getString(R.string.api_key2)
+                )));
+                int currentApiKeyIndex = prefs.getInt("current_key", 0);
+                List<String> apiKeys = new ArrayList<>(apiKeySet);
+                String currentApiKey = apiKeys.get(currentApiKeyIndex);
+                Call<CategoryResponse> call = recipeCategoryApiService.getRecipeCategory(currentApiKey);
                 call.enqueue(new Callback<CategoryResponse>() {
                     @Override
                     public void onResponse(Call<CategoryResponse> call, Response<CategoryResponse> response) {
@@ -150,7 +163,16 @@ public class RecipeResponsiveRetrofit {
         if (runCount < 1000) { // Kiểm tra số lần chạy
             incrementRetrofitRunCount(); // Tăng biến đếm
             MealApiService recipeMealApiService = RetrofitInstance.getServiceMeal();
-            Call<MealResponse> call = recipeMealApiService.getRecipeMeal(nameCategory, application.getApplicationContext().getString(R.string.api_key1));
+            SharedPreferences prefs = application.getSharedPreferences("API_KEYS", Context.MODE_PRIVATE);
+            Set<String> apiKeySet = prefs.getStringSet("keys", new HashSet<>(Arrays.asList(
+                    application.getApplicationContext().getString(R.string.api_key),
+                    application.getApplicationContext().getString(R.string.api_key1),
+                    application.getApplicationContext().getString(R.string.api_key2)
+            )));
+            int currentApiKeyIndex = prefs.getInt("current_key", 0);
+            List<String> apiKeys = new ArrayList<>(apiKeySet);
+            String currentApiKey = apiKeys.get(currentApiKeyIndex);
+            Call<MealResponse> call = recipeMealApiService.getRecipeMeal(nameCategory, currentApiKey);
             call.enqueue(new Callback<MealResponse>() {
                 @Override
                 public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
@@ -182,10 +204,24 @@ public class RecipeResponsiveRetrofit {
         int runCount = getRetrofitRunCount();
         Log.d("runCount",runCount+"");
         if (runCount < 1000) { // Kiểm tra số lần chạy
+            int intIdMeal = Integer.parseInt(idMeal);
+            Log.d("runCount",idMeal);
+            Log.d("runCountInt",intIdMeal+"");
 
             incrementRetrofitRunCount(); // Tăng biến đếm
             MealDetailService recipeMealApiService = RetrofitInstance.getServiceMealDetail();
-            Call<MealDetailResponse> call = recipeMealApiService.getRecipeMealDetail(idMeal, application.getApplicationContext().getString(R.string.api_key1));
+            // 1. Lấy API keys và chỉ số hiện tại
+            SharedPreferences prefs = application.getSharedPreferences("API_KEYS", Context.MODE_PRIVATE);
+            Set<String> apiKeySet = prefs.getStringSet("keys", new HashSet<>(Arrays.asList(
+                    application.getApplicationContext().getString(R.string.api_key),
+                    application.getApplicationContext().getString(R.string.api_key1),
+                    application.getApplicationContext().getString(R.string.api_key2)
+            )));
+            int currentApiKeyIndex = prefs.getInt("current_key", 0);
+            List<String> apiKeys = new ArrayList<>(apiKeySet);
+            String currentApiKey = apiKeys.get(currentApiKeyIndex);
+
+            Call<MealDetailResponse> call = recipeMealApiService.getRecipeMealDetail(intIdMeal, currentApiKey);
             call.enqueue(new Callback<MealDetailResponse>() {
                 @Override
                 public void onResponse(Call<MealDetailResponse> call, Response<MealDetailResponse> response) {
@@ -291,9 +327,4 @@ public class RecipeResponsiveRetrofit {
         }
 
     }
-
-    //Comment
-
-
-
 }
