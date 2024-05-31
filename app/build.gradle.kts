@@ -90,5 +90,6 @@ dependencies {
     //thư viện xử lí ảnh ở login
     //implementation (com.android.support:cardview-v7:28.0.0)
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation ("com.facebook.android:facebook-android-sdk:latest.release")
 
 }

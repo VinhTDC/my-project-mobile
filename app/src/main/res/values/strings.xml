@@ -35,4 +35,9 @@
     <string name="evaluate_rating">Evaluate:</string>
     <string name="add_a_comment">Add a comment...</string>
     <string name="comment">Comment</string>
+    //8qNzEkHhV7K5klMThiKDgWbipQ=
+    //VzSiQcXRmi2kyjzcA+mYLEtbGVs=
+    <string name="facebook_app_id">806275748171051</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">fba58ff58ab112231e92581e4e82cf2e</string>
 </resources>
