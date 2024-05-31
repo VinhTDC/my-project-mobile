@@ -8,5 +8,5 @@ import vn.edu.tdc.doan_d2.model.mealdetail.MealDetailResponse;
 
 public interface MealDetailService {
     @GET("details/{idMeal}")
-    Call<MealDetailResponse> getRecipeMealDetail(@Path("idMeal")String idMeal, @Query("rapidapi-key") String key);
+    Call<MealDetailResponse> getRecipeMealDetail(@Path("idMeal")Integer idMeal, @Query("rapidapi-key") String key);
 }

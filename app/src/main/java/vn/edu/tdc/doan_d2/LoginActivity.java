@@ -1,4 +1,5 @@
 package vn.edu.tdc.doan_d2;
+import com.facebook.FacebookSdk;
 
 
 import androidx.annotation.NonNull;
@@ -57,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         textEmail = findViewById(R.id.textEmail);
         textPassword = findViewById(R.id.textPassWord);
         btnLogin = findViewById(R.id.btnLogin);
-        btnGoogle = findViewById(R.id.btnGoogle);
+
 
 
         progressDialog = new ProgressDialog(this);
@@ -110,13 +111,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         //bắt sự kiện cho đăng nhập với Google
-        btnGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this , GoogleSignActivity.class);
-                startActivity(intent);
-            }
-        });
+
 
 
     }

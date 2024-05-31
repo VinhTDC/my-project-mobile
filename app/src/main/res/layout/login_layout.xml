@@ -19,6 +19,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <View
                 android:id="@+id/view4"
                 android:layout_width="0dp"
@@ -41,9 +42,11 @@
                 android:textColor="@color/white"
                 android:textSize="60sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/textEmail"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
 
             <EditText
                 android:id="@+id/textEmail"
@@ -64,10 +67,12 @@
                 android:paddingBottom="13dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/textPassWord"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView8" />
+                app:layout_constraintTop_toBottomOf="@+id/textView8"
+                app:layout_constraintVertical_bias="0.5" />
 
             <EditText
                 android:id="@+id/textPassWord"
@@ -86,9 +91,11 @@
                 android:paddingBottom="13dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/textForgotPassWord"
                 app:layout_constraintEnd_toEndOf="@+id/textEmail"
                 app:layout_constraintStart_toStartOf="@+id/textEmail"
-                app:layout_constraintTop_toBottomOf="@+id/textEmail" />
+                app:layout_constraintTop_toBottomOf="@+id/textEmail"
+                app:layout_constraintVertical_bias="0.5" />
 
             <TextView
                 android:id="@+id/textForgotPassWord"
@@ -106,14 +113,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:backgroundTint="@color/black"
                 android:text="Login"
+                android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/textCreateNewAcount"
                 app:layout_constraintEnd_toEndOf="@+id/textForgotPassWord"
                 app:layout_constraintStart_toStartOf="@+id/textPassWord"
-                app:layout_constraintTop_toBottomOf="@+id/textForgotPassWord" />
+                app:layout_constraintTop_toBottomOf="@+id/textForgotPassWord"
+                app:layout_constraintVertical_bias="0.5" />
 
             <TextView
                 android:id="@+id/textCreateNewAcount"
@@ -123,9 +132,11 @@
                 android:text="Create New Acount ?"
                 android:textColor="@color/white"
                 android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView11"
                 app:layout_constraintEnd_toEndOf="@+id/btnLogin"
                 app:layout_constraintStart_toStartOf="@+id/btnLogin"
-                app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
+                app:layout_constraintTop_toBottomOf="@+id/btnLogin"
+                app:layout_constraintVertical_bias="0.5" />
 
             <TextView
                 android:id="@+id/textView11"
@@ -136,48 +147,24 @@
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/login_button"
                 app:layout_constraintEnd_toEndOf="@+id/textCreateNewAcount"
                 app:layout_constraintStart_toStartOf="@+id/textCreateNewAcount"
-                app:layout_constraintTop_toBottomOf="@+id/textCreateNewAcount" />
+                app:layout_constraintTop_toBottomOf="@+id/textCreateNewAcount"
+                app:layout_constraintVertical_bias="0.5" />
 
-            <ImageView
-                android:id="@+id/btnGit"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/textCreateNewAcount"
-                app:layout_constraintHorizontal_bias="0.875"
-                app:layout_constraintStart_toStartOf="@+id/textCreateNewAcount"
-                app:layout_constraintTop_toBottomOf="@+id/textView11"
-                app:layout_constraintVertical_bias="0.33"
-                app:srcCompat="@drawable/github" />
-
-            <ImageView
-                android:id="@+id/btnFB"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                app:layout_constraintBottom_toBottomOf="@+id/btnGit"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.346"
-                app:layout_constraintStart_toEndOf="@+id/btnGit"
-                app:layout_constraintTop_toTopOf="@+id/btnGit"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/fb_vuong"
-                />
-
-            <ImageView
-                android:id="@+id/btnGoogle"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                app:layout_constraintBottom_toBottomOf="@+id/btnGit"
-                app:layout_constraintEnd_toStartOf="@+id/btnGit"
-                app:layout_constraintHorizontal_bias="0.874"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/btnGit"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/logo_google" />
+                app:layout_constraintTop_toBottomOf="@+id/textView11"
+                app:layout_constraintVertical_bias="0.5" />
+
 
             <View
                 android:layout_width="0dp"
