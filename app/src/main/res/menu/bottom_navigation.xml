@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/id_homeBottom"
         android:icon="@drawable/icon_home"
-        android:title="Home"
-        />
+        android:title="Home" />
     <item
+        android:id="@+id/id_person"
         android:icon="@drawable/icon_person"
         android:title="Person" />
     <item
+        android:id="@+id/id_favorite"
         android:icon="@drawable/icon_favourite"
         android:title="Favourite" />
-
     <item
+        android:id="@+id/id_setting"
         android:icon="@drawable/icon_setting"
-        android:title="Setting"
-        />
+        android:title="Setting" />
 </menu>

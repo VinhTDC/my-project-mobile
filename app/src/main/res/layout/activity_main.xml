@@ -159,7 +159,5 @@
             android:layout_marginBottom="70dp"
             app:menu="@menu/nav_drawer_menu" />
 
-
-
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

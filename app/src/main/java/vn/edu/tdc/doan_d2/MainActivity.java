@@ -91,6 +91,30 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
         return true;
     }
 
+    // Xử lý sự kiện click trên Toolbar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.id_homeBottom) {
+            // Chuyển sang trang chủ
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.id_person) {
+            // Xử lý khi chọn nút Person
+            return true;
+        } else if (itemId == R.id.id_favorite) {
+            // Chuyển sang trang yêu thích
+            Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.id_setting) {
+            // Xử lý khi chọn nút Setting
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     // Thiết lập thanh công cụ
     private void setupToolbar() {
         toolbar = binding.toolbar;
@@ -136,10 +160,14 @@ public class MainActivity extends AppCompatActivity implements PaginationInterfa
         new AlertDialog.Builder(this)
                 .setTitle("Exit Confirmation")
                 .setMessage("Bạn có muốn thoát không?")
+                .setMessage("(Về trang Home)")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                        // Chuyển sang LoginActivity và xóa tất cả các activity trước đó
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                     }
                 })
                 .setNegativeButton("No", null)

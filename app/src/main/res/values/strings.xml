@@ -35,4 +35,25 @@
     <string name="evaluate_rating">Evaluate:</string>
     <string name="add_a_comment">Add a comment...</string>
     <string name="comment">Comment</string>
+    <string name="home">Home</string>
+    <string name="person">Person</string>
+    <string name="favourite">Favourite</string>
+    <string name="setting">Setting</string>
+    <string name="study">Study</string>
+    <string name="food">Food</string>
+    <string name="exit">Exit</string>
+    <string name="wellcome">Wellcome</string>
+    <string name="reply">Reply</string>
+    <string name="like">Like</string>
+    <string name="favorite">Favorite</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="time">Time</string>
+    <string name="direction">Direction</string>
+    <string name="nutriotion">Nutriotion</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">PassWord</string>
+    <string name="login_login">Login</string>
+    <string name="create_new_acount">Create New Acount ?</string>
+    <string name="or">OR</string>
 </resources>
